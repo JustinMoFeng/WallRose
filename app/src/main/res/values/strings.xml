@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WallRose</string>
+
+    <string name="tabbar_chat">聊天</string>
+    <string name="tabbar_profile">我的</string>
+
+    <string name="chatinput_placeholder">请输入内容开始聊天</string>
 </resources>

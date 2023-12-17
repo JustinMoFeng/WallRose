@@ -2,14 +2,13 @@ package com.shingekinokyojin.wallrose.navigator
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.shingekinokyojin.wallrose.config.RouteConfig
-import com.shingekinokyojin.wallrose.page.chat.ChatPage
-import com.shingekinokyojin.wallrose.page.profile.ProfilePage
+import com.shingekinokyojin.wallrose.ui.chat.ChatPage
+import com.shingekinokyojin.wallrose.ui.profile.ProfilePage
 
 @Composable
 fun WallRoseNavHost(
