@@ -5,4 +5,7 @@
     <string name="tabbar_profile">我的</string>
 
     <string name="chatinput_placeholder">请输入内容开始聊天</string>
+    <string name="profile_chat_history">聊天历史</string>
+    <string name="profile_logout">退出登录</string>
+    <string name="profile_new_chat">开始新聊天</string>
 </resources>
