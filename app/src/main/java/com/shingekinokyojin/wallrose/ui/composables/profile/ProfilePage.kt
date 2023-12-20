@@ -1,9 +1,8 @@
-package com.shingekinokyojin.wallrose.ui.profile
+package com.shingekinokyojin.wallrose.ui.composables.profile
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
-import com.shingekinokyojin.wallrose.ui.common.WallRoseAppBar
-import com.shingekinokyojin.wallrose.ui.common.WallRoseDrawer
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
 
@@ -170,7 +169,7 @@ fun ProfileUserPart(
         ) {
 
             Spacer(modifier = Modifier.weight(0.2f))
-            
+
             Image(
                 painter = painterResource(id = R.drawable.profile_user_example),
                 contentDescription = "样例用户头像",

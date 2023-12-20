@@ -1,4 +1,4 @@
-package com.shingekinokyojin.wallrose.ui.common
+package com.shingekinokyojin.wallrose.ui.composables.common
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes

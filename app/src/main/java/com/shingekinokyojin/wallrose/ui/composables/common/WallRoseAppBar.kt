@@ -1,4 +1,4 @@
-package com.shingekinokyojin.wallrose.ui.common
+package com.shingekinokyojin.wallrose.ui.composables.common
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image

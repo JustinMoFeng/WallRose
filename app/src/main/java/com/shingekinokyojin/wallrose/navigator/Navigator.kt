@@ -7,8 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.shingekinokyojin.wallrose.config.RouteConfig
-import com.shingekinokyojin.wallrose.ui.chat.ChatPage
-import com.shingekinokyojin.wallrose.ui.profile.ProfilePage
+import com.shingekinokyojin.wallrose.ui.composables.chat.ChatPage
+import com.shingekinokyojin.wallrose.ui.composables.profile.ProfilePage
 
 @Composable
 fun WallRoseNavHost(

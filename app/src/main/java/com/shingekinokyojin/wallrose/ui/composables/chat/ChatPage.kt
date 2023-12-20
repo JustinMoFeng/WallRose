@@ -1,4 +1,4 @@
-package com.shingekinokyojin.wallrose.ui.chat
+package com.shingekinokyojin.wallrose.ui.composables.chat
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.opengl.GLSurfaceView
@@ -52,9 +52,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
-import com.shingekinokyojin.wallrose.ui.common.WallRoseAppBar
-import com.shingekinokyojin.wallrose.ui.common.WallRoseDrawer
-import com.shingekinokyojin.wallrose.ui.profile.ProfileContent
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
+import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileContent
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
 
