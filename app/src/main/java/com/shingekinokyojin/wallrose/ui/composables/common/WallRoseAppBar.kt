@@ -2,8 +2,12 @@ package com.shingekinokyojin.wallrose.ui.composables.common
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -67,7 +71,15 @@ fun WallRoseAppBar(
 
             // 开启悬浮窗按钮
             IconButton(onClick = {
-
+                if (!Settings.canDrawOverlays(context)) {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                    context.startActivity(intent)
+                    // 你可能需要一种方式来检查用户从设置返回后权限的状态
+                } else {
+                    // 如果已经有权限了，那么就开启悬浮窗
+                    val intent = Intent(context, FloatingWindowService::class.java)
+                    context.startForegroundService(intent)
+                }
             }) {
                 Image(
                     modifier = Modifier.size(30.dp),
@@ -79,6 +91,9 @@ fun WallRoseAppBar(
     }
 
 }
+
+
+
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)

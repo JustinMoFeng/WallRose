@@ -100,6 +100,7 @@ public class LAppMinimumModel extends CubismUserModel {
             isMotionUpdated = expressionManager.updateMotion(model, deltaTimeSeconds);
         }
 
+
         // モデルの状態を保存
         model.saveParameters();
 

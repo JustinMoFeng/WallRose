@@ -8,7 +8,9 @@
 package com.shingekinokyojin.wallrose.live2d;
 
 
+import com.live2d.sdk.cubism.framework.id.CubismId;
 import com.live2d.sdk.cubism.framework.math.CubismMatrix44;
+import com.live2d.sdk.cubism.framework.model.CubismModel;
 
 /**
  * サンプルアプリケーションにおいてCubismModelを管理するクラス。
@@ -30,6 +32,8 @@ public class LAppMinimumLive2DManager {
         String dir = modelDirectoryName.getDirName() + "/";
         model = new LAppMinimumModel(dir);
         model.loadAssets(dir, modelDirectoryName.getDirName() + ".model3.json");
+        CubismId index = new CubismId("Part10");
+        model.getModel().setPartOpacity(index, 0f);
     }
 
     // モデル更新処理及び描画処理を行う
