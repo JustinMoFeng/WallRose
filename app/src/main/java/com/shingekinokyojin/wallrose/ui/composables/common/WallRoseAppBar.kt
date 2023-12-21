@@ -1,6 +1,9 @@
 package com.shingekinokyojin.wallrose.ui.composables.common
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -14,11 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.shingekinokyojin.wallrose.R
+import com.shingekinokyojin.wallrose.services.FloatingWindowService
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 
 @Composable
@@ -27,6 +33,7 @@ fun WallRoseAppBar(
     title: String = "WallRose",
     onLeftClick: () -> Unit = {}
 ){
+    val context = LocalContext.current
     WallRoseTheme {
         Row(
             modifier = modifier
@@ -57,6 +64,17 @@ fun WallRoseAppBar(
 
             // 使用 Spacer 来平衡右侧空间
             Spacer(modifier = Modifier.weight(1f))
+
+            // 开启悬浮窗按钮
+            IconButton(onClick = {
+
+            }) {
+                Image(
+                    modifier = Modifier.size(30.dp),
+                    painter = painterResource(id = R.drawable.appbar_floating),
+                    contentDescription = "Floating"
+                )
+            }
         }
     }
 

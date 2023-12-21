@@ -19,7 +19,9 @@ private val DarkColorScheme = darkColorScheme(
     primary = DarkNavColor,
     secondary = DarkBackgroundColor,
     onSecondary = OnDarkNavColor,
-    tertiary = DarkWordColor
+    tertiary = DarkWordColor,
+    // chat聊天框背景色
+    background = TransDarkBackgroundColor,
 
 
 )

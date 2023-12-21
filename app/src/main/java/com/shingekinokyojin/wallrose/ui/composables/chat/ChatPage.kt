@@ -2,9 +2,13 @@ package com.shingekinokyojin.wallrose.ui.composables.chat
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.opengl.GLSurfaceView
+import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +43,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,9 +56,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
+import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
+import com.shingekinokyojin.wallrose.live2d.GLRendererMinimum
+import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileContent
@@ -97,19 +110,146 @@ fun ChatPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-
+            gesturesEnabled = false,
             drawerState = drawerState,
         ) {
-            Text(text = "CHAT", modifier = Modifier
-                .fillMaxSize()
-                .padding(it))
+            ChatBody(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            )
         }
 
     }
 
 }
 
+@Composable
+fun ChatBody(
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.secondary),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ChatLive2d(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
 
+        ChatBottomInputPart(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.primary)
+                .weight(0.1f)
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ChatLive2d(
+    modifier: Modifier = Modifier,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+){
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInteropFilter { event ->
+                    val pointX = event.x
+                    val pointY = event.y
+
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> LAppMinimumDelegate
+                            .getInstance()
+                            .onTouchBegan(pointX, pointY)
+
+                        MotionEvent.ACTION_UP -> LAppMinimumDelegate
+                            .getInstance()
+                            .onTouchEnd(pointX, pointY)
+
+                        MotionEvent.ACTION_MOVE -> LAppMinimumDelegate
+                            .getInstance()
+                            .onTouchMoved(pointX, pointY)
+                    }
+                    true
+                },
+            factory = {
+                GLSurfaceView(it).apply {
+                    setEGLContextClientVersion(2)
+                    setRenderer(GLRendererMinimum())
+                    renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                }
+            },
+            update = { glSurfaceView ->
+                // This is a simplified example. Depending on your app's requirements,
+                // you might need a more robust way to handle lifecycle events.
+                // 获取Activity
+                // Observing lifecycle changes
+                val lifecycleObserver = LifecycleEventObserver { _, event ->
+                    when (event) {
+                        Lifecycle.Event.ON_START -> LAppMinimumDelegate.getInstance().onStart(MainActivity.instance)
+                        Lifecycle.Event.ON_RESUME -> glSurfaceView.onResume()
+                        Lifecycle.Event.ON_PAUSE -> {
+                            glSurfaceView.onPause()
+                            LAppMinimumDelegate.getInstance().onPause()
+                        }
+
+                        Lifecycle.Event.ON_STOP -> LAppMinimumDelegate.getInstance().onStop()
+                        Lifecycle.Event.ON_DESTROY -> LAppMinimumDelegate.getInstance().onDestroy()
+                        else -> {}
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+
+            }
+        )
+
+        ChatFeedBack(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .align(Alignment.BottomCenter)
+                .height(180.dp)
+                .padding(bottom = 30.dp),
+            word = "这里是聊天反馈"
+        )
+    }
+}
+
+@Composable
+fun ChatFeedBack(
+    modifier: Modifier = Modifier,
+    word:String
+){
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .background(color = MaterialTheme.colorScheme.background, RoundedCornerShape(15.dp))
+        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp)),
+        contentAlignment = Alignment.TopCenter,
+
+    ){
+        Text(
+            text = word,
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentSize(Alignment.TopCenter)
+                .padding(top = 10.dp),
+            textAlign = TextAlign.Center,
+            style = TextStyle(
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.tertiary
+            ),
+        )
+    }
+
+}
 
 
 /**
@@ -128,9 +268,8 @@ fun ChatBottomInputPart(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(bottom = 15.dp, start = 5.dp, end = 5.dp, top = 5.dp)
                 .background(color = MaterialTheme.colorScheme.primary),
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Image(
@@ -214,44 +353,6 @@ fun ChatBottomInputPart(
     }
 }
 
-@Composable
-fun ChatBodyPart(
-    modifier: Modifier = Modifier
-){
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.secondary)
-    ) {
-        AndroidView(
-            factory = {
-                GLSurfaceView(it).apply {
-                    setEGLContextClientVersion(2)
-                    setRenderer(object : GLSurfaceView.Renderer {
-                        override fun onSurfaceCreated(
-                            gl: javax.microedition.khronos.opengles.GL10?,
-                            config: javax.microedition.khronos.egl.EGLConfig?
-                        ) {
-                            // TODO
-                        }
-
-                        override fun onSurfaceChanged(
-                            gl: javax.microedition.khronos.opengles.GL10?,
-                            width: Int,
-                            height: Int
-                        ) {
-                            // TODO
-                        }
-
-                        override fun onDrawFrame(gl: javax.microedition.khronos.opengles.GL10?) {
-                            // TODO
-                        }
-                    })
-                }
-            },
-        )
-    }
-}
 
 
 
@@ -260,4 +361,10 @@ fun ChatBodyPart(
 @Composable
 fun ChatBottomInputPartPreview(){
     ChatBottomInputPart()
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true, backgroundColor = 0xFF300000)
+@Composable
+fun ChatLive2dPreview(){
+    ChatLive2d()
 }

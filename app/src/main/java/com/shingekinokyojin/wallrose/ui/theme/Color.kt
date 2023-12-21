@@ -14,5 +14,6 @@ val DarkWordColor = Color(0xFFFFE2CC)
 val DarkNavColor = Color(0xFF300000)
 val OnDarkNavColor = Color(0xFFFD8F3A)
 val DarkBackgroundColor = Color(0xFF593333)
+val TransDarkBackgroundColor = Color(0xBF593333)
 
 val ButtonColor = Color(0xFFFF7F7F)

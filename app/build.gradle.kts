@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":CubismJavaFramework:framework"))
     val nav_version = "2.5.3"
     val compose_version = "1.7.1"
     implementation("androidx.core:core-ktx:1.9.0")
@@ -69,4 +70,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation(fileTree(mapOf("dir" to "../Core/android", "include" to listOf("Live2DCubismCore.aar"))))
 }

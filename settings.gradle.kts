@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "WallRose"
-include(":app")
+include(":app",":CubismJavaFramework:framework")
