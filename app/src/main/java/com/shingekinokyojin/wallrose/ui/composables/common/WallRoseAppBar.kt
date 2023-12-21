@@ -78,7 +78,7 @@ fun WallRoseAppBar(
                 } else {
                     // 如果已经有权限了，那么就开启悬浮窗
                     val intent = Intent(context, FloatingWindowService::class.java)
-                    context.startForegroundService(intent)
+                    context.startService(intent)
                 }
             }) {
                 Image(

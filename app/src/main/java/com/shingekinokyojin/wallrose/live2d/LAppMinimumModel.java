@@ -14,6 +14,8 @@ import com.live2d.sdk.cubism.framework.CubismDefaultParameterId;
 import com.live2d.sdk.cubism.framework.CubismFramework;
 import com.live2d.sdk.cubism.framework.CubismModelSettingJson;
 import com.live2d.sdk.cubism.framework.ICubismModelSetting;
+import com.live2d.sdk.cubism.framework.effect.CubismBreath;
+import com.live2d.sdk.cubism.framework.effect.CubismEyeBlink;
 import com.live2d.sdk.cubism.framework.id.CubismId;
 import com.live2d.sdk.cubism.framework.id.CubismIdManager;
 import com.live2d.sdk.cubism.framework.math.CubismMatrix44;
@@ -95,9 +97,6 @@ public class LAppMinimumModel extends CubismUserModel {
         if (expressionManager.isFinished()) {
             Log.d("LAppMinimumModel", expressions.toString());
             expressionManager.startMotionPriority(expressions.get("fix"), LAppDefine.Priority.IDLE.getPriority());
-        } else {
-            // モーションを更新
-            isMotionUpdated = expressionManager.updateMotion(model, deltaTimeSeconds);
         }
 
 
@@ -339,6 +338,23 @@ public class LAppMinimumModel extends CubismUserModel {
                 loadPose(buffer);
             }
         }
+
+        // Load eye blink data
+        if (modelSetting.getEyeBlinkParameterCount() > 0) {
+            eyeBlink = CubismEyeBlink.create(modelSetting);
+        }
+
+        // Load Breath Data
+        breath = CubismBreath.create();
+        List<CubismBreath.BreathParameterData> breathParameters = new ArrayList<CubismBreath.BreathParameterData>();
+
+        breathParameters.add(new CubismBreath.BreathParameterData(idParamAngleX, 0.0f, 15.0f, 6.5345f, 0.5f));
+        breathParameters.add(new CubismBreath.BreathParameterData(idParamAngleY, 0.0f, 8.0f, 3.5345f, 0.5f));
+        breathParameters.add(new CubismBreath.BreathParameterData(idParamAngleZ, 0.0f, 10.0f, 5.5345f, 0.5f));
+        breathParameters.add(new CubismBreath.BreathParameterData(idParamBodyAngleX, 0.0f, 4.0f, 15.5345f, 0.5f));
+        breathParameters.add(new CubismBreath.BreathParameterData(CubismFramework.getIdManager().getId(CubismDefaultParameterId.ParameterId.BREATH.getId()), 0.5f, 0.5f, 3.2345f, 0.5f));
+
+        breath.setParameters(breathParameters);
 
         // Load UserData
         {
