@@ -91,7 +91,7 @@ public class LAppMinimumLive2DManager {
     private static LAppMinimumLive2DManager s_instance;
 
     private LAppMinimumLive2DManager() {
-        currentModel = LAppDefine.ModelDir.values()[2];
+        currentModel = LAppDefine.ModelDir.values()[0];
 
         loadModel(currentModel);
     }

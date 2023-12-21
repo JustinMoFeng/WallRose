@@ -8,6 +8,8 @@
 package com.shingekinokyojin.wallrose.live2d;
 
 
+import android.util.Log;
+
 import com.live2d.sdk.cubism.framework.CubismDefaultParameterId;
 import com.live2d.sdk.cubism.framework.CubismFramework;
 import com.live2d.sdk.cubism.framework.CubismModelSettingJson;
@@ -84,11 +86,18 @@ public class LAppMinimumModel extends CubismUserModel {
         model.loadParameters();
 
         // モーションの再生がない場合、待機モーションの中からランダムで再生する
-        if (motionManager.isFinished()) {
-            startMotion(LAppDefine.MotionGroup.IDLE.getId(), 0, LAppDefine.Priority.IDLE.getPriority());
+//        if (motionManager.isFinished()) {
+//            startMotion(LAppDefine.MotionGroup.IDLE.getId(), 0, LAppDefine.Priority.IDLE.getPriority());
+//        } else {
+//            // モーションを更新
+//            isMotionUpdated = motionManager.updateMotion(model, deltaTimeSeconds);
+//        }
+        if (expressionManager.isFinished()) {
+            Log.d("LAppMinimumModel", expressions.toString());
+            expressionManager.startMotionPriority(expressions.get("fix"), LAppDefine.Priority.IDLE.getPriority());
         } else {
             // モーションを更新
-            isMotionUpdated = motionManager.updateMotion(model, deltaTimeSeconds);
+            isMotionUpdated = expressionManager.updateMotion(model, deltaTimeSeconds);
         }
 
         // モデルの状態を保存
