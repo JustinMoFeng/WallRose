@@ -34,7 +34,7 @@ class FloatingWindowService : Service() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
         val inflater = LayoutInflater.from(this)
-        floatingView = inflater.inflate(R.layout.floating_window_layout, null)
+        floatingView = inflater.inflate(R.layout.floating_window_arouse_layout, null)
 
         var initialX = 0
         var initialY = 0
