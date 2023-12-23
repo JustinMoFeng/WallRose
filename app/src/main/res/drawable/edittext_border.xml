@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 底部边框 -->
+    <item android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" /> <!-- 设置背景颜色为透明 -->
+            <stroke android:width="2dp" android:color="@android:color/white" /> <!-- 设置底部边框颜色和宽度 -->
+            <corners android:radius="8dp" /> <!-- 设置圆角半径 -->
+        </shape>
+    </item>
+</layer-list>

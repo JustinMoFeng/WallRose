@@ -1,14 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/float_border">
 
-    <View
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GPT 返回的消息"
+        android:textAlignment="center"
+        android:paddingVertical="15dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        />
+
+    <Space
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        
-    </View>
+        android:layout_height="20dp"/>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/float_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:background="@drawable/edittext_border"
+            android:minHeight="40dp"
+            android:paddingHorizontal="10dp"
+            android:hint="@string/float_hint"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:inputType="text"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.3"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            android:background="@drawable/float_button"
+            android:textColorHint="@drawable/float_button_text"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="10dp">
+
+        <ImageView
+            android:id="@+id/float_voice"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/float_voice"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/voice" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.0"/>
+
+        <ImageView
+            android:id="@+id/float_app"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/float_app"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/back_to_app" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.0"/>
+
+        <ImageView
+            android:id="@+id/float_hide"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/float_hide"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/hide" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -18,9 +18,7 @@ fun MyFloatingContent(
     // 一个圆点，size 为 25.dp
     Spacer(
         modifier = modifier
-            .size(25.dp)
             .background(color = MaterialTheme.colorScheme.background, CircleShape)
             .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
     )
-
 }

@@ -8,4 +8,9 @@
     <string name="profile_chat_history">聊天历史</string>
     <string name="profile_logout">退出登录</string>
     <string name="profile_new_chat">开始新聊天</string>
+    <string name="send">发送</string>
+    <string name="voice">语音输入</string>
+    <string name="back_to_app">回到app</string>
+    <string name="hide">隐藏</string>
+    <string name="float_hint">请输入并开始聊天</string>
 </resources>

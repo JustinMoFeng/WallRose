@@ -70,5 +70,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation(fileTree(mapOf("dir" to "../Core/android", "include" to listOf("Live2DCubismCore.aar"))))
 }
