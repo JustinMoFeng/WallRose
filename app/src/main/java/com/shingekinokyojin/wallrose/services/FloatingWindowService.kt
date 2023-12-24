@@ -1,6 +1,7 @@
 package com.shingekinokyojin.wallrose.services
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -23,6 +24,7 @@ import android.widget.ImageView
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.ui.composables.floating.MyFloatingContent
 import com.shingekinokyojin.wallrose.utils.PixelConvert
@@ -59,6 +61,35 @@ class FloatingWindowService : Service() {
             floatingView.visibility = View.VISIBLE
             floatingWindow.visibility = View.GONE
             isBottomInputVisible = false
+        }
+
+        floatingWindow.findViewById<ImageView>(R.id.float_app).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+
+            // 获取 ActivityManager 以检查活动栈
+            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val tasks = activityManager.appTasks
+
+            // 检查 MainActivity 是否已经是栈顶
+            val isMainActivityAtTop = tasks.any { task ->
+                task.taskInfo.topActivity?.className == MainActivity::class.java.name
+            }
+
+            // 检查 MainActivity 是否是前台活动
+            val isMainActivityForeground = isAppInForeground(this, packageName)
+
+
+            Log.d("FloatingWindowService", "onCreate: isMainActivityAtTop: $isMainActivityAtTop, isMainActivityForeground: $isMainActivityForeground")
+
+            // 根据 MainActivity 是否在栈顶和是否前台设置不同的标志
+            if(isMainActivityAtTop && !isMainActivityForeground){
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            }else if(!isMainActivityAtTop){
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            }
+
         }
 
 
@@ -150,6 +181,17 @@ class FloatingWindowService : Service() {
     }
 
 
+    fun isAppInForeground(context: Context, packageName: String): Boolean {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val runningAppProcesses = activityManager.runningAppProcesses ?: return false
+
+        for (processInfo in runningAppProcesses) {
+            if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && processInfo.processName == packageName) {
+                return true
+            }
+        }
+        return false
+    }
 
     override fun onDestroy() {
         super.onDestroy()
