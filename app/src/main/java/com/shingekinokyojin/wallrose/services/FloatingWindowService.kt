@@ -35,10 +35,8 @@ class FloatingWindowService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
-    private lateinit var savedStateRegistryOwner: ServiceSavedStateRegistryOwner
-    private val handler = Handler(Looper.getMainLooper())
-//    private lateinit var floatingWindow:View
-//    private var isBottomInputVisible = false
+    private lateinit var floatingWindow:View
+    private var isBottomInputVisible = false
 
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -48,33 +46,20 @@ class FloatingWindowService : Service() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate() {
         super.onCreate()
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        handler.post{
-            savedStateRegistryOwner = ServiceSavedStateRegistryOwner()
-            savedStateRegistryOwner.onCreate()
+
+        floatingView = LayoutInflater.from(this).inflate(R.layout.floating_window_arouse_layout, null)
+        floatingWindow = LayoutInflater.from(this).inflate(R.layout.floating_window_layout, null)
+        floatingWindow.visibility = View.GONE
+
+
+
+        floatingWindow.findViewById<ImageView>(R.id.float_hide).setOnClickListener {
+            floatingView.visibility = View.VISIBLE
+            floatingWindow.visibility = View.GONE
+            isBottomInputVisible = false
         }
-
-
-        floatingView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(savedStateRegistryOwner)
-            setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-            setContent {
-                MyFloatingContent()
-            }
-        }
-
-//        floatingView = LayoutInflater.from(this).inflate(R.layout.floating_window_arouse_layout, null)
-//        floatingWindow = LayoutInflater.from(this).inflate(R.layout.floating_window_layout, null)
-//        floatingWindow.visibility = View.GONE
-//
-//
-//
-//        floatingWindow.findViewById<ImageView>(R.id.float_hide).setOnClickListener {
-//            floatingView.visibility = View.VISIBLE
-//            floatingWindow.visibility = View.GONE
-//            isBottomInputVisible = false
-//        }
 
 
         var initialX = 0
@@ -96,7 +81,7 @@ class FloatingWindowService : Service() {
 
         val layoutParams2 = WindowManager.LayoutParams().apply {
             type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
             format = PixelFormat.TRANSLUCENT
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
@@ -104,24 +89,7 @@ class FloatingWindowService : Service() {
             gravity = Gravity.BOTTOM
         }
 
-//        val editText = floatingWindow.findViewById<EditText>(R.id.float_edit)
-//
-//        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//
-//
-//        // 监听点击Edittext事件，根据软键盘的出现来控制高度
-//        editText.setOnFocusChangeListener { v, hasFocus ->
-//            if (hasFocus) {
-//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-//                Log.d("FloatingWindowService", "onCreate: 软键盘弹出")
-//                layoutParams2.y  -= PixelConvert.dpToPx(100f).toInt()
-//            } else {
-//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-//                Log.d("FloatingWindowService", "onCreate: 软键盘收起")
-//                layoutParams2.y += PixelConvert.dpToPx(100f).toInt()
-//            }
-//        }
-
+        val editText = floatingWindow.findViewById<EditText>(R.id.float_edit)
 
         val clickThreshold = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
@@ -146,15 +114,15 @@ class FloatingWindowService : Service() {
                     if (abs(event.rawX - initialTouchX) < clickThreshold && abs(event.rawY - initialTouchY) < clickThreshold) {
                         // 点击事件
                         Log.d("FloatingWindowService", "onCreate: 点击事件")
-//                        if (isBottomInputVisible) {
-//                            floatingView.visibility = View.VISIBLE
-//                            floatingWindow.visibility = View.GONE
-//                            isBottomInputVisible = false
-//                        } else {
-//                            floatingWindow.visibility = View.VISIBLE
-//                            floatingView.visibility = View.GONE
-//                            isBottomInputVisible = true
-//                        }
+                        if (isBottomInputVisible) {
+                            floatingView.visibility = View.VISIBLE
+                            floatingWindow.visibility = View.GONE
+                            isBottomInputVisible = false
+                        } else {
+                            floatingWindow.visibility = View.VISIBLE
+                            floatingView.visibility = View.GONE
+                            isBottomInputVisible = true
+                        }
                     }
                     true
                 }
@@ -177,19 +145,15 @@ class FloatingWindowService : Service() {
         }
 
         windowManager.addView(floatingView, layoutParams)
-//        windowManager.addView(floatingWindow, layoutParams2)
+        windowManager.addView(floatingWindow, layoutParams2)
 
     }
 
 
-    private fun initFloatingView(){
-
-    }
 
     override fun onDestroy() {
         super.onDestroy()
         windowManager.removeView(floatingView)
-        savedStateRegistryOwner.onDestroy()
-//        windowManager.removeView(floatingWindow)
+        windowManager.removeView(floatingWindow)
     }
 }
