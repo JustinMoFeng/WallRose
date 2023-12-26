@@ -3,6 +3,9 @@ from openai import AsyncOpenAI
 import os
 import asyncio
 from dotenv import load_dotenv
+from fastapi import APIRouter
+
+router = APIRouter()
 
 async def gpt_api_stream(prompt):
     """为提供的对话消息创建新的回答 (流式传输)
