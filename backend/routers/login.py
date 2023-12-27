@@ -5,14 +5,12 @@ from dependencies.auth_dependencies import verify_password, hash_password, creat
 from models.result_models import Result
 from datetime import timedelta
 import os
-from dotenv import load_dotenv
 
 router = APIRouter()
 
 @router.post("/register")
 async def register(user: User):
     # print(user)
-    load_dotenv()
     if user.username in fake_users_db:
         raise HTTPException(status_code=400, detail="Username already registered")
     hashed_password = hash_password(user.password)
@@ -26,7 +24,6 @@ async def register(user: User):
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    load_dotenv()
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(

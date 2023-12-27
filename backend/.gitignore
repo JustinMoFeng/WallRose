@@ -1,3 +1,4 @@
 backend_venv
 androidfinal
 __pycache__
+.env

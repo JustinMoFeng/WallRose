@@ -4,7 +4,6 @@ from typing import Optional
 from jose import jwt
 from fastapi import Depends, HTTPException, status
 import os
-from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
 from models.user_models import UserInDB, fake_users_db, TokenData
 from jose import JWTError
@@ -25,7 +24,6 @@ def verify_password(plain_password, hashed_password):
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     # 生成token的函数
-    load_dotenv()
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
