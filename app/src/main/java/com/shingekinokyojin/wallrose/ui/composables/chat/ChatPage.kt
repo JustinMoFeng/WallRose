@@ -32,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,15 +58,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
-import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.live2d.GLRendererMinimum
 import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
-import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileContent
+import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
 
@@ -97,6 +96,7 @@ fun ChatPage(
         },
 
     ) {
+        val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory)
         ModalNavigationDrawer(
             drawerContent = {
                 WallRoseDrawer(
@@ -116,7 +116,9 @@ fun ChatPage(
             ChatBody(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .padding(it),
+                currentMessage = chatViewModel.currentMessage,
+                sendAction = chatViewModel::getMessages
             )
         }
 
@@ -126,7 +128,9 @@ fun ChatPage(
 
 @Composable
 fun ChatBody(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentMessage: String,
+    sendAction: () -> Unit
 ){
     Column(
         modifier = modifier
@@ -138,14 +142,16 @@ fun ChatBody(
         ChatLive2d(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            currentMessage = currentMessage
         )
 
         ChatBottomInputPart(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.primary)
-                .weight(0.1f)
+                .weight(0.1f),
+            sendAction = sendAction
         )
     }
 }
@@ -154,7 +160,8 @@ fun ChatBody(
 @Composable
 fun ChatLive2d(
     modifier: Modifier = Modifier,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    currentMessage: String
 ){
     Box(
         modifier = modifier.fillMaxSize()
@@ -218,7 +225,7 @@ fun ChatLive2d(
                 .align(Alignment.BottomCenter)
                 .height(180.dp)
                 .padding(bottom = 30.dp),
-            word = "这里是聊天反馈"
+            word = currentMessage
         )
     }
 }
@@ -258,7 +265,8 @@ fun ChatFeedBack(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ChatBottomInputPart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sendAction: () -> Unit
 ){
 
     var text by remember { mutableStateOf("") }
@@ -330,7 +338,9 @@ fun ChatBottomInputPart(
             )
 
             Button(
-                onClick = { /*TODO*/  },
+                onClick = {
+                    sendAction()
+                },
                 modifier = Modifier
                     .weight(1.8f)
                     .height(40.dp)
@@ -360,11 +370,21 @@ fun ChatBottomInputPart(
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true, backgroundColor = 0xFF300000)
 @Composable
 fun ChatBottomInputPartPreview(){
-    ChatBottomInputPart()
+    ChatBottomInputPart(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        sendAction = {}
+    )
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true, backgroundColor = 0xFF300000)
 @Composable
 fun ChatLive2dPreview(){
-    ChatLive2d()
+    ChatLive2d(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        currentMessage = "123"
+    )
 }

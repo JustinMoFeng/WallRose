@@ -1,8 +1,14 @@
-import okhttp3.*
-import kotlinx.coroutines.*
+package com.shingekinokyojin.wallrose.network
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.IOException
 
-class GptApiResponse(private val url: String) {
+private const val  BASE_URL = "http://127.0.0.1:8000"
+class ChatApiService(private val url: String) {
     private val client = OkHttpClient()
 
     fun startListening() = CoroutineScope(Dispatchers.IO).launch {
@@ -35,18 +41,5 @@ class GptApiResponse(private val url: String) {
     private fun processEvent(data: String) {
         // 处理接收到的数据，不要换行
         print(data)
-    }
-}
-
-fun main() {
-    val greetingStreamClient = GptApiResponse("http://127.0.0.1:8000/greeting_stream")
-    greetingStreamClient.startListening()
-    val prompt = "你好，我是"
-//    val gptStreamClient = GptApiResponse("http://127.0.0.1:8000/gpt_query?prompt=$prompt")
-//    gptStreamClient.startListening()
-
-    // 让程序保持运行，以接收流式数据
-    runBlocking {
-        delay(10000)
     }
 }

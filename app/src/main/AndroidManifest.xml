@@ -23,6 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WallRose"
+        android:usesCleartextTraffic="true"
         >
         <service android:name=".services.FloatingWindowService" />
 
