@@ -116,6 +116,7 @@ fun RegisterBody(
 ){
     WallRoseTheme{
         var showDialog by remember { mutableStateOf(false) }
+        var showFailureDialog by remember { mutableStateOf(false) }
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -134,7 +135,22 @@ fun RegisterBody(
                 username = authenticateViewModel.username
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+
+            TextInput(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .wrapContentHeight(),
+                onValueChange = { authenticateViewModel.nickname = it },
+                imageValue = R.drawable.authenticate_username,
+                placeHolderValue = "请输入昵称",
+                username = authenticateViewModel.nickname
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
 
             PasswordTextInput(
                 modifier = Modifier
@@ -200,7 +216,10 @@ fun RegisterBody(
                     .fillMaxWidth(0.8f)
                     .padding(horizontal = 8.dp, vertical = 8.dp)
                     .height(48.dp)
-                    .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium),
+                    .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
+                    .clickable {
+                                    authenticateViewModel.register()
+                               },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -213,6 +232,42 @@ fun RegisterBody(
                     textAlign = TextAlign.Center,
                 )
             }
+
+            if(authenticateViewModel.registerState=="true") {
+                AlertDialog(
+                    onDismissRequest = { showFailureDialog = false },
+                    title = { Text("提示") },
+                    text = { Text("") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                authenticateViewModel.registerState = ""
+                                showFailureDialog = false
+                                onGoToLogin()
+                            }
+                        ) {
+                            Text("确定", color = MaterialTheme.colorScheme.tertiary)
+                        }
+                    }
+                )
+            }else if(authenticateViewModel.registerState!=""){
+                AlertDialog(
+                    onDismissRequest = { showFailureDialog = false },
+                    title = { Text("提示") },
+                    text = { Text(authenticateViewModel.registerState) },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                authenticateViewModel.registerState = ""
+                                showFailureDialog = false
+                            }
+                        ) {
+                            Text("确定", color = MaterialTheme.colorScheme.tertiary)
+                        }
+                    }
+                )
+            }
+
         }
     }
 }
@@ -381,21 +436,21 @@ fun PasswordTextInput(
 
 
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
-@Composable
-fun PreviewRegisterBody() {
-    RegisterBody(
-        authenticateViewModel = AuthenticateViewModel(),
-    )
-}
-
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
-@Composable
-fun PreviewRegisterPage() {
-    RegisterPage(
-        authenticateViewModel = AuthenticateViewModel(),
-        navController = NavController(LocalContext.current)
-    )
-}
+//@Preview
+//@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
+//@Composable
+//fun PreviewRegisterBody() {
+//    RegisterBody(
+//        authenticateViewModel = AuthenticateViewModel(),
+//    )
+//}
+//
+//@Preview
+//@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
+//@Composable
+//fun PreviewRegisterPage() {
+//    RegisterPage(
+//        authenticateViewModel = AuthenticateViewModel(),
+//        navController = NavController(LocalContext.current)
+//    )
+//}

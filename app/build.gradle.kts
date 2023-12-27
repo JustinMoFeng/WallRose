@@ -8,6 +8,7 @@ plugins {
 android {
     namespace = "com.shingekinokyojin.wallrose"
     compileSdk = 33
+    apply(plugin = "kotlinx-serialization")
 
     defaultConfig {
         applicationId = "com.shingekinokyojin.wallrose"

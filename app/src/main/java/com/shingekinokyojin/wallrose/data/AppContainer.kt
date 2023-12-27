@@ -1,10 +1,12 @@
 package com.shingekinokyojin.wallrose.data
 
+import com.shingekinokyojin.wallrose.network.AuthenticateApiService
 import com.shingekinokyojin.wallrose.network.ChatApiService
 import okhttp3.OkHttpClient
 
 interface AppContainer {
     val chatsRepository: ChatsRepository
+    val userRepository: UserRepository
 }
 
 class DefaultAppContainer : AppContainer {
@@ -30,5 +32,19 @@ class DefaultAppContainer : AppContainer {
      */
     override val chatsRepository: ChatsRepository by lazy {
         NetworkChatsRepository(chatApiService)
+    }
+
+    /**
+     * api service for authentication
+     */
+    private val authenticateApiService: AuthenticateApiService by lazy {
+        AuthenticateApiService(baseUrl, okHttpClient)
+    }
+
+    /**
+     * DI implementation for User repository
+     */
+    override val userRepository: UserRepository by lazy {
+        NetworkUserRepository(authenticateApiService)
     }
 }

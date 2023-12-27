@@ -23,7 +23,7 @@ fun WallRoseNavHost(
 ){
 
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
-    val authenticateViewModel : AuthenticateViewModel = viewModel()
+    val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
 
     NavHost(
         modifier = modifier,

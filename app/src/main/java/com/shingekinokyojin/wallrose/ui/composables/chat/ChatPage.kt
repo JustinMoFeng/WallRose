@@ -268,6 +268,13 @@ fun ChatFeedBack(
 
 }
 
+@Composable
+fun ChatMyMessage(
+    modifier: Modifier
+){
+
+}
+
 
 /**
  * 聊天底部输入框

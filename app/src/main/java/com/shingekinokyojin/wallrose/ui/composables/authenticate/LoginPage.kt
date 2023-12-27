@@ -237,14 +237,14 @@ fun PreviewTextInput() {
     )
 }
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
-@Composable
-fun PreviewLoginBody() {
-    LoginBody(
-        authenticateViewModel = AuthenticateViewModel(),
-    )
-}
+//@Preview
+//@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
+//@Composable
+//fun PreviewLoginBody() {
+//    LoginBody(
+//        authenticateViewModel = AuthenticateViewModel(),
+//    )
+//}
 
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
@@ -258,12 +258,12 @@ fun PreviewPasswordTextInput() {
     )
 }
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
-@Composable
-fun PreviewLoginPage() {
-    LoginPage(
-        authenticateViewModel = AuthenticateViewModel(),
-        navController = NavController(LocalContext.current)
-    )
-}
+//@Preview
+//@Preview(uiMode = UI_MODE_NIGHT_YES, name = "Dark Mode",showBackground = true, backgroundColor = 0xFF300000)
+//@Composable
+//fun PreviewLoginPage() {
+//    LoginPage(
+//        authenticateViewModel = AuthenticateViewModel(),
+//        navController = NavController(LocalContext.current)
+//    )
+//}
