@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 
@@ -74,4 +75,5 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "../Core/android", "include" to listOf("Live2DCubismCore.aar"))))
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 }

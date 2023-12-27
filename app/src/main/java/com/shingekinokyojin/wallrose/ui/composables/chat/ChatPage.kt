@@ -33,11 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -118,7 +114,9 @@ fun ChatPage(
                     .fillMaxSize()
                     .padding(it),
                 currentMessage = chatViewModel.currentMessage,
-                sendAction = chatViewModel::getMessages
+                inputMessage = chatViewModel.inputMessage,
+                changeText = { chatViewModel.inputMessage = it },
+                sendAction = chatViewModel::sendMessage
             )
         }
 
@@ -130,6 +128,8 @@ fun ChatPage(
 fun ChatBody(
     modifier: Modifier = Modifier,
     currentMessage: String,
+    inputMessage: String,
+    changeText: (String) -> Unit = {},
     sendAction: () -> Unit
 ){
     Column(
@@ -151,6 +151,8 @@ fun ChatBody(
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.primary)
                 .weight(0.1f),
+            text = inputMessage,
+            changeText = changeText,
             sendAction = sendAction
         )
     }
@@ -270,10 +272,10 @@ fun ChatFeedBack(
 @Composable
 fun ChatBottomInputPart(
     modifier: Modifier = Modifier,
+    text: String,
+    changeText: (String) -> Unit = {},
     sendAction: () -> Unit
 ){
-
-    var text by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     WallRoseTheme {
@@ -297,7 +299,7 @@ fun ChatBottomInputPart(
             BasicTextField(
                 value = text,
                 onValueChange = {
-                    text = it
+                    changeText(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
@@ -341,7 +343,6 @@ fun ChatBottomInputPart(
 
             Button(
                 onClick = {
-                    text = ""
                     sendAction()
                 },
                 modifier = Modifier
@@ -377,6 +378,7 @@ fun ChatBottomInputPartPreview(){
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
+        text = "123",
         sendAction = {}
     )
 }

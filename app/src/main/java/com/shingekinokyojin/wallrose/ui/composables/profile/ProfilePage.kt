@@ -115,7 +115,7 @@ fun ProfileContent(
             )
 
             ProfileUserChatHistory(
-                contenttList = listOf(
+                contentList = listOf(
                     "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
                     "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
                     "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
@@ -216,7 +216,7 @@ fun ProfileUserChatHistoryItem(
                     .background(color = MaterialTheme.colorScheme.primary)
                     .fillMaxWidth()
                     .padding(vertical = 3.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ){
                 Image(
                     painter = painterResource(id = R.drawable.profile_chat_history),
@@ -257,7 +257,7 @@ fun ProfileUserChatHistoryItem(
 @Composable
 fun ProfileUserChatHistory(
     modifier: Modifier = Modifier,
-    contenttList: List<String>
+    contentList: List<String>
 ){
     WallRoseTheme {
         Column(
@@ -302,7 +302,7 @@ fun ProfileUserChatHistory(
             LazyColumn(
                 modifier = Modifier
             ) {
-                items(contenttList){ content ->
+                items(contentList){ content ->
                     Spacer(modifier = Modifier.height(5.dp))
                     ProfileUserChatHistoryItem(
                         modifier = Modifier
@@ -337,7 +337,7 @@ fun PreviewProfileUserChatHistoryItem(){
 @Composable
 fun PreviewProfileUserChatHistory(){
     ProfileUserChatHistory(
-        contenttList = listOf(
+        contentList = listOf(
             "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
             "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
             "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",

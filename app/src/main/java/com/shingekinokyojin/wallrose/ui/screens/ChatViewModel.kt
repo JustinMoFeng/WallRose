@@ -8,72 +8,55 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.shingekinokyojin.wallrose.WallRoseApplication
+import com.shingekinokyojin.wallrose.data.ChatsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.IOException
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(
+    private val chatsRepository: ChatsRepository
+) : ViewModel() {
 
     // LiveData for chat messages
     private val _messages = MutableLiveData<List<String>>()
     val messages: LiveData<List<String>> = _messages
+    var responding by mutableStateOf(false)
     var currentMessage by mutableStateOf("")
-
-    fun sendMessage(message: String) {
-        // Assuming _messages.value is not null.
-        // In a real application, null checks and thread safety should be considered.
-        val updatedMessages = _messages.value.orEmpty().toMutableList().apply {
-            add(message)
-        }
-        _messages.value = updatedMessages
-    }
+    var inputMessage by mutableStateOf("")
 
     fun clearMessages() {
         _messages.value = emptyList()
     }
 
-    val client = OkHttpClient()
-    val url = "http://10.0.2.2:8000/greeting_stream"
-    fun getMessages() {
-        currentMessage = "114514"
-        Log.d("ChatViewModel", "Listening to $url")
-        return;
+    fun sendMessage() {
+        if (responding) {
+            return
+        }
+        responding = true
+        inputMessage = ""
+        currentMessage = "..."
+        Log.d("ChatViewModel", "Sending $inputMessage")
         viewModelScope.launch(Dispatchers.IO) {
-            currentMessage = ""
-            val request = Request.Builder()
-                .url(url)
-                .build()
-            try {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                    response.body?.let { responseBody ->
-                        responseBody.source().use { source ->
-                            while (!source.exhausted()) {
-                                val line = source.readUtf8Line() ?: break
-                                if (line.startsWith("data:")) {
-                                    val data = line.removePrefix("data:")
-                                    Log.d("ChatViewModel", data)
-                                    currentMessage += data
-                                }
-                            }
-                        }
-                    }
+            chatsRepository.sendMessage(inputMessage).collect() { chatEvent ->
+                if (currentMessage == "...") {
+                    currentMessage = ""
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d("ChatViewModel", "Received $chatEvent")
+                currentMessage += chatEvent.data
             }
+            responding = false
         }
     }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                ChatViewModel()
+                val application = (this[APPLICATION_KEY] as WallRoseApplication)
+                val chatsRepository = application.container.chatsRepository
+                ChatViewModel(chatsRepository)
             }
         }
     }

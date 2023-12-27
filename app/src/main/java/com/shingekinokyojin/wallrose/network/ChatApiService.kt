@@ -1,45 +1,45 @@
 package com.shingekinokyojin.wallrose.network
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.shingekinokyojin.wallrose.model.ChatEvent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
-private const val  BASE_URL = "http://127.0.0.1:8000"
-class ChatApiService(private val url: String) {
-    private val client = OkHttpClient()
+class ChatApiService(
+    private val url: String,
+    private val okHttpClient: OkHttpClient
+) {
+    fun sendMessage(message: String) : Flow<ChatEvent> {
+        return flow {
+            val request = Request.Builder()
+                .url("$url/greeting_stream?message=${message}")
+                .build()
+            try {
+                okHttpClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-    fun startListening() = CoroutineScope(Dispatchers.IO).launch {
-        println("Listening to $url")
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        try {
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                response.body?.let { responseBody ->
-                    responseBody.source().use { source ->
-                        while (!source.exhausted()) {
-                            val line = source.readUtf8Line() ?: break
-                            if (line.startsWith("data:")) {
-                                val data = line.removePrefix("data:")
-                                processEvent(data)
-                            }
+                    // SSE
+                    val source = response.body!!.source()
+                    var event = ""
+                    var data = ""
+                    while (!source.exhausted()) {
+                        val line = source.readUtf8LineStrict()
+                        if (line.startsWith("event: ")) {
+                            event = line.substring(7)
+                        } else if (line.startsWith("data: ")) {
+                            data = line.substring(6)
+                        } else if (line == "") {
+                            emit(ChatEvent(event, data))
+                            event = ""
+                            data = ""
                         }
                     }
                 }
+            } catch (e: Exception) {
+                throw e
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
-    }
-
-    private fun processEvent(data: String) {
-        // 处理接收到的数据，不要换行
-        print(data)
     }
 }
