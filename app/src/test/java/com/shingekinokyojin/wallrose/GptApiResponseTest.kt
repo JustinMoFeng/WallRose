@@ -6,6 +6,7 @@ class GptApiResponse(private val url: String) {
     private val client = OkHttpClient()
 
     fun startListening() = CoroutineScope(Dispatchers.IO).launch {
+        println("Listening to $url")
         val request = Request.Builder()
             .url(url)
             .build()
@@ -32,13 +33,14 @@ class GptApiResponse(private val url: String) {
     }
 
     private fun processEvent(data: String) {
-        // 处理接收到的数据
-        println(data)
+        // 处理接收到的数据，不要换行
+        print(data)
     }
 }
 
 fun main() {
-    val greetingStreamClient = GptApiResponse("http://your-backend-url/greeting_stream") // 替换为您的后端 URL
+    val prompt = "你好，我是"
+    val greetingStreamClient = GptApiResponse("http://127.0.0.1:8000/gpt_query?prompt=$prompt")
     greetingStreamClient.startListening()
 
     // 让程序保持运行，以接收流式数据

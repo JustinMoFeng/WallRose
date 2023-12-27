@@ -73,4 +73,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation(fileTree(mapOf("dir" to "../Core/android", "include" to listOf("Live2DCubismCore.aar"))))
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
 }
