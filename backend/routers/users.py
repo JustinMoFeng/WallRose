@@ -23,7 +23,7 @@ async def get_avatar(user_id: str, collection=Depends(get_user_collection)):
     根据用户 id 返回用户头像
     """
     user = await collection.find_one({"_id":ObjectId(user_id)})
-    if user:
+    if user and user.get("avatar"):
         return StreamingResponse(BytesIO(user["avatar"]), media_type="image/png")
     else:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User avatar not found")
