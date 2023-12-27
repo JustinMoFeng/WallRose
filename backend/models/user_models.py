@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Union, Any
-from bson import ObjectId, Binary
+from bson import ObjectId
 from pydantic_core import core_schema
 
 class PyObjectId(str):
@@ -33,11 +33,12 @@ class User(BaseModel):
     username: str
     nickname: str
     password: str | None = None
-    avatar: bytes | None = None
+    avatarUrl: str | None = None
 
 class UserInDB(User):
     user_id: PyObjectId | None = Field(alias="_id", default=None)
     hashed_password: str
+    avatar: bytes | None = None
 
 class Token(BaseModel):
     access_token: str
