@@ -58,10 +58,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
+import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.live2d.GLRendererMinimum
 import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
-import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
@@ -80,7 +81,7 @@ fun ChatPage(
     Scaffold(
         modifier = modifier,
         topBar = {
-            WallRoseAppBar(
+            WallRoseTabAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -116,7 +117,10 @@ fun ChatPage(
                 currentMessage = chatViewModel.currentMessage,
                 inputMessage = chatViewModel.inputMessage,
                 changeText = { chatViewModel.inputMessage = it },
-                sendAction = chatViewModel::sendMessage
+                sendAction = {
+                    navController.navigate(RouteConfig.ROUTE_LOGIN)
+                    chatViewModel.sendMessage()
+                }
             )
         }
 
@@ -343,6 +347,7 @@ fun ChatBottomInputPart(
 
             Button(
                 onClick = {
+
                     sendAction()
                 },
                 modifier = Modifier

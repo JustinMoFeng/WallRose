@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
@@ -32,7 +33,7 @@ import com.shingekinokyojin.wallrose.services.FloatingWindowService
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 
 @Composable
-fun WallRoseAppBar(
+fun WallRoseTabAppBar(
     modifier: Modifier = Modifier,
     title: String = "WallRose",
     onLeftClick: () -> Unit = {}
@@ -71,15 +72,16 @@ fun WallRoseAppBar(
 
             // 开启悬浮窗按钮
             IconButton(onClick = {
-                if (!Settings.canDrawOverlays(context)) {
-                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
-                    context.startActivity(intent)
-                    // 你可能需要一种方式来检查用户从设置返回后权限的状态
-                } else {
-                    // 如果已经有权限了，那么就开启悬浮窗
-                    val intent = Intent(context, FloatingWindowService::class.java)
-                    context.startService(intent)
-                }
+//                if (!Settings.canDrawOverlays(context)) {
+//                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+//                    context.startActivity(intent)
+//                    // 你可能需要一种方式来检查用户从设置返回后权限的状态
+//                } else {
+//                    // 如果已经有权限了，那么就开启悬浮窗
+//                    val intent = Intent(context, FloatingWindowService::class.java)
+//                    context.startService(intent)
+//                }
+
             }) {
                 Image(
                     modifier = Modifier.size(30.dp),
@@ -93,11 +95,62 @@ fun WallRoseAppBar(
 }
 
 
+@Composable
+fun WallRoseDetailAppBar(
+    modifier: Modifier = Modifier,
+    title: String = "WallRose",
+    onLeftClick: () -> Unit = {}
+){
+    WallRoseTheme {
+        Row(
+            modifier = modifier
+                .fillMaxWidth() // 使 Row 填满父容器的宽度
+                .background(color = MaterialTheme.colorScheme.primary), // 添加一些内边距
+            verticalAlignment = Alignment.CenterVertically // 垂直居中子元素
+        ) {
+            // 点击事件绑定到 Image 上
+            IconButton(onClick = { onLeftClick() }) {
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                    ,
+                    painter = painterResource(id = R.drawable.appbar_back),
+                    contentDescription = "Menu"
+                )
+            }
+
+            // 使用 Spacer 来推动 Text 到中间
+            Spacer(modifier = Modifier.weight(0.9f))
+
+            // Text 位于 Row 的中间
+            Text(
+                text = title,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+
+            // 使用 Spacer 来平衡右侧空间
+            Spacer(modifier = Modifier.weight(1f))
+
+        }
+    }
+}
+
 
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewWallRoseChatAppBar(){
-    WallRoseAppBar()
+    WallRoseTabAppBar()
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun PreviewWallRoseDetailAppBar(){
+    WallRoseDetailAppBar()
+}
+

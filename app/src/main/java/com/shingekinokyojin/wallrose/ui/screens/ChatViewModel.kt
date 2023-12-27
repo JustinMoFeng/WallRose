@@ -33,6 +33,7 @@ class ChatViewModel(
     }
 
     fun sendMessage() {
+
         if (responding) {
             return
         }

@@ -1,5 +1,6 @@
 package com.shingekinokyojin.wallrose.network
 
+import android.util.Log
 import com.shingekinokyojin.wallrose.model.ChatEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,7 +39,7 @@ class ChatApiService(
                     }
                 }
             } catch (e: Exception) {
-                throw e
+                Log.e("ChatApiService", "Error: $e")
             }
         }
     }

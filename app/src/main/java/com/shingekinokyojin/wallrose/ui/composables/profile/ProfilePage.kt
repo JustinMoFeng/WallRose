@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
-import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseAppBar
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
+import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ fun ProfilePage(
         containerColor = MaterialTheme.colorScheme.secondary,
         modifier = modifier,
         topBar = {
-            WallRoseAppBar(
+            WallRoseTabAppBar(
                 title = stringResource(id = R.string.tabbar_profile),
                 onLeftClick = {
                     if(drawerState.isOpen) scope.launch { drawerState.close() }
