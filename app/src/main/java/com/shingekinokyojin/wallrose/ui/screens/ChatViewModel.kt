@@ -40,7 +40,9 @@ class ChatViewModel : ViewModel() {
     val client = OkHttpClient()
     val url = "http://10.0.2.2:8000/greeting_stream"
     fun getMessages() {
+        currentMessage = "114514"
         Log.d("ChatViewModel", "Listening to $url")
+        return;
         viewModelScope.launch(Dispatchers.IO) {
             currentMessage = ""
             val request = Request.Builder()

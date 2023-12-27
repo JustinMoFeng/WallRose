@@ -2,6 +2,7 @@ package com.shingekinokyojin.wallrose.ui.composables.chat
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.opengl.GLSurfaceView
+import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,7 +59,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatPage(
     modifier: Modifier = Modifier,
+    chatViewModel: ChatViewModel,
     navController: NavController
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -96,7 +97,6 @@ fun ChatPage(
         },
 
     ) {
-        val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory)
         ModalNavigationDrawer(
             drawerContent = {
                 WallRoseDrawer(
@@ -189,17 +189,13 @@ fun ChatLive2d(
                     true
                 },
             factory = {
-                GLSurfaceView(it).apply {
+                Log.d("ChatLive2d", "factory")
+                val glSurfaceView = GLSurfaceView(it).apply {
                     setEGLContextClientVersion(2)
                     setRenderer(GLRendererMinimum())
                     renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
                 }
-            },
-            update = { glSurfaceView ->
-                // This is a simplified example. Depending on your app's requirements,
-                // you might need a more robust way to handle lifecycle events.
-                // 获取Activity
-                // Observing lifecycle changes
+
                 val lifecycleObserver = LifecycleEventObserver { _, event ->
                     when (event) {
                         Lifecycle.Event.ON_START -> LAppMinimumDelegate.getInstance().onStart(MainActivity.instance)
@@ -216,6 +212,14 @@ fun ChatLive2d(
                 }
                 lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
 
+                glSurfaceView
+            },
+            update = { _ ->
+                // This is a simplified example. Depending on your app's requirements,
+                // you might need a more robust way to handle lifecycle events.
+                // 获取Activity
+                // Observing lifecycle changes
+                Log.d("ChatLive2d", "update")
             }
         )
 
@@ -290,8 +294,6 @@ fun ChatBottomInputPart(
 
             )
 
-
-
             BasicTextField(
                 value = text,
                 onValueChange = {
@@ -339,6 +341,7 @@ fun ChatBottomInputPart(
 
             Button(
                 onClick = {
+                    text = ""
                     sendAction()
                 },
                 modifier = Modifier
