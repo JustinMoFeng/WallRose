@@ -2,12 +2,16 @@ import openai
 from openai import AsyncOpenAI
 import os
 import asyncio
+
+from sse_starlette.sse import EventSourceResponse
+
 from fastapi import APIRouter
 
 router = APIRouter()
 
 async def gpt_api_stream(prompt):
-    """为提供的对话消息创建新的回答 (流式传输)
+    """
+    为提供的对话消息创建新的回答 (流式传输)
     """
     try:
         client = AsyncOpenAI(
@@ -28,6 +32,21 @@ async def gpt_api_stream(prompt):
             print(chunk.choices[0].delta.content or "", end="")
     except Exception as err:
         return f"OpenAI API 异常: {err}"
+    
+async def produce_greeting_stream():
+    """
+    每秒钟返回 Greeting 中的一个字母
+    """
+    for char in "你好，我是牧濑红莉栖，有什么问题吗":
+        yield {"event": "greeting", "data": char}
+        await asyncio.sleep(0.2)
+    
+@router.get("/greeting_stream")
+async def greeting_stream():
+    """
+    以 SSE 流的形式返回 Greeting
+    """
+    return EventSourceResponse(produce_greeting_stream())
 
 if __name__ == "__main__":
     prompt = "There are 9 birds in the tree, the hunter shoots one, how many birds are left in the tree？"

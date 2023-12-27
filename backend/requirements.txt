@@ -1,6 +1,6 @@
 annotated-types==0.6.0
 anyio==3.7.1
-bcrypt==4.1.2
+bcrypt==4.0.1
 certifi==2023.11.17
 cffi==1.16.0
 click==8.1.7
@@ -42,3 +42,4 @@ ujson==5.9.0
 uvicorn==0.25.0
 watchfiles==0.21.0
 websockets==12.0
+sse_starlette==1.8.2
