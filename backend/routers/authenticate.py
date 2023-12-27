@@ -15,17 +15,14 @@ router = APIRouter()
 async def register(user: User, collection=Depends(get_user_collection)):
     # 如果用户名已经存在，返回错误
     if await collection.find_one({"username":user.username}):
-        raise HTTPException(status_code=400, detail="Username already registered")
-    try:
-        hashed_password = hash_password(user.password)
-        expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=400, detail="用户名重复")
+    hashed_password = hash_password(user.password)
+    expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
     # 将用户信息存入mongodb, user.id是mongodb自动生成的_id
     res = await collection.insert_one({"username":user.username,"hashed_password":hashed_password,"nickname":user.nickname})
     token_dict = {"username":user.username,"user_id":str(res.inserted_id)}
     create_access_token(token_dict,timedelta(minutes=expire_minutes))
-    return {"message":"Register Success"}
+    return {"message":"注册成功"}
 
 
 @router.post("/login", response_model=Token)
