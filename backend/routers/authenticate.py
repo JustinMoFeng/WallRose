@@ -22,7 +22,7 @@ async def register(user: User, collection=Depends(get_user_collection)):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     # 将用户信息存入mongodb, user.id是mongodb自动生成的_id
-    res = await collection.insert_one({"username":user.username,"hashed_password":hashed_password})
+    res = await collection.insert_one({"username":user.username,"hashed_password":hashed_password,"nickname":user.nickname})
     token_dict = {"username":user.username,"user_id":str(res.inserted_id)}
     create_access_token(token_dict,timedelta(minutes=expire_minutes))
     return {"message":"Register Success"}

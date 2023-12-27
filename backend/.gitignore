@@ -3,3 +3,4 @@ androidfinal
 __pycache__
 .env
 config.json
+test

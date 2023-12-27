@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Union, Any
-from bson import ObjectId
+from bson import ObjectId, Binary
 from pydantic_core import core_schema
 
 class PyObjectId(str):
@@ -31,7 +31,9 @@ class PyObjectId(str):
 
 class User(BaseModel):
     username: str
-    password: Optional[str] = None
+    nickname: str
+    password: str | None = None
+    avatar: bytes | None = None
 
 class UserInDB(User):
     user_id: PyObjectId | None = Field(alias="_id", default=None)
@@ -41,7 +43,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-
 class TokenData(BaseModel):
-    username: Union[str, None] = None
-    user_id: Union[int, None] = None
+    username: str | None = None
+    user_id: str | None = None
