@@ -1,9 +1,11 @@
 from io import BytesIO
-from fastapi import APIRouter, File, UploadFile, Depends, HTTPException
+from fastapi import APIRouter, File, UploadFile, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from bson import ObjectId
 from database import get_user_collection
 from dependencies.auth_dependencies import get_current_user
+from pydantic import BaseModel
+from dependencies.auth_dependencies import authenticate_user
 
 router = APIRouter()
 
@@ -17,39 +19,48 @@ async def upload_image(file: UploadFile = File(...), collection=Depends(get_user
     res = await collection.update_one({"username":user.username},{"$set":{"avatar":image_data}})
     return {"message":"上传成功"}
 
-@router.get("/avatar", response_class=StreamingResponse)
-async def get_avatar(user=Depends(get_current_user)):
+@router.get("/avatar/{user_id}", response_class=StreamingResponse)
+async def get_avatar(user_id: str, collection=Depends(get_user_collection)):
     """
     根据用户 id 返回用户头像
     """
+    user = await collection.find_one({"_id":ObjectId(user_id)})
     if user and user.get("avatar"):
-        return StreamingResponse(BytesIO(user["avatar"]), media_type="image/png")
+        return StreamingResponse(BytesIO(user.avatar), media_type="image/png")
     else:
         raise HTTPException(status_code=404, detail="User avatar not found")
+
+
+class Password(BaseModel):
+    old_password: str
+    new_password: str
     
-@router.put("/password")
-async def change_password(old_password: str, new_password: str, collection=Depends(get_user_collection), user=Depends(get_current_user)):
+@router.put("/users/password")
+async def change_password(password: Password, collection=Depends(get_user_collection), user=Depends(get_current_user)):
     """
     修改密码
     """
-    if user:
-        if user["password"] == old_password:
-            await collection.update_one({"username":user["username"]},{"$set":{"password":new_password}})
-            return {"message":"Change password success"}
-        else:
-            raise HTTPException(status_code=400, detail="Old password is wrong")
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    
-@router.put("/nickname")
+    user = await authenticate_user(user.username, password.old_password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="原密码错误",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        await collection.update_one({"username":user.username},{"$set":{"password":password.new_password}})
+        return {"message":"Change password success"}
+    except:
+        raise HTTPException(status_code=500, detail="Change password failed")
+     
+@router.put("/users/nickname")
 async def change_nickname(nickname: str, collection=Depends(get_user_collection), user=Depends(get_current_user)):
     """
     修改昵称
     """
-    if user:
-        await collection.update_one({"username":user["username"]},{"$set":{"nickname":nickname}})
+    try:
+        await collection.update_one({"username":user.username},{"$set":{"nickname":nickname}})
         return {"message":"Change nickname success"}
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
+    except:
+        raise HTTPException(status_code=500, detail="Change nickname failed")
     

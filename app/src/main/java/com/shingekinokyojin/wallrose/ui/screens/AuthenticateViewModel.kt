@@ -29,14 +29,14 @@ class AuthenticateViewModel(
     fun register() {
         viewModelScope.launch {
             val string = authenticateRepository.register(username, password, nickname)
-            registerState = string.toString()
+            registerState = string
         }
     }
 
     fun login() {
         viewModelScope.launch {
             val string = authenticateRepository.login(username, password)
-            loginState = string.toString()
+            loginState = string
         }
     }
 

@@ -69,7 +69,7 @@ fun ProfilePage(
         val scope = rememberCoroutineScope()
         userViewModel.getUserInfo()
 
-        if(userViewModel.userInfoStatus != "true"&&userViewModel.userInfoStatus != ""){
+        if(userViewModel.userInfoState != "true"&&userViewModel.userInfoState != ""){
             AlertDialog(
                 onDismissRequest = {
                     navController.navigate(RouteConfig.ROUTE_LOGIN)
@@ -91,7 +91,7 @@ fun ProfilePage(
                 confirmButton = {
                     Button(
                         onClick = {
-                            Log.d("userInfoStatus", userViewModel.userInfoStatus)
+                            Log.d("userInfoStatus", userViewModel.userInfoState)
                             navController.navigate(RouteConfig.ROUTE_LOGIN)
                         },
                         shape = RoundedCornerShape(10.dp),

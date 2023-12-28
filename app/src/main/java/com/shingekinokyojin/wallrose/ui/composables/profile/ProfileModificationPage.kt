@@ -1,34 +1,34 @@
 package com.shingekinokyojin.wallrose.ui.composables.profile
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key.Companion.I
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDetailAppBar
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
@@ -42,7 +42,7 @@ fun ProfileModificationPage(
 ) {
 
     WallRoseTheme {
-        userViewModel.reviseNickname = userViewModel.myNickname
+        userViewModel.newNickname = userViewModel.myNickname
         Scaffold(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.primary),
@@ -53,7 +53,7 @@ fun ProfileModificationPage(
                         .height(56.dp),
                     title = if(userViewModel.reviseUserInfo == "昵称") "修改昵称" else "修改密码",
                     onLeftClick = {
-                        userViewModel.reviseNickname = ""
+                        userViewModel.newNickname = ""
                         userViewModel.oldPassword = ""
                         userViewModel.newPassword = ""
                         userViewModel.newPasswordAgain = ""
@@ -73,7 +73,15 @@ fun ProfileModificationPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(it),
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    onGoBack = {
+                        userViewModel.newNickname = ""
+                        userViewModel.oldPassword = ""
+                        userViewModel.newPassword = ""
+                        userViewModel.newPasswordAgain = ""
+                        userViewModel.reviseUserInfoState = ""
+                        navController.popBackStack()
+                    }
                 )
             }
         }
@@ -83,7 +91,8 @@ fun ProfileModificationPage(
 @Composable
 fun ProfileModificationBody(
     modifier: Modifier = Modifier,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    onGoBack: () -> Unit
 ) {
     WallRoseTheme {
         Column(
@@ -132,7 +141,13 @@ fun ProfileModificationBody(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
-                onClick = {  },
+                onClick = {
+                    if(userViewModel.reviseUserInfo == "昵称") {
+                        userViewModel.reviseNickname()
+                    } else {
+                        userViewModel.revisePassword()
+                    }
+                },
                 content = {
                     Text(
                         text = "确认",
@@ -143,6 +158,118 @@ fun ProfileModificationBody(
                     )
                 }
             )
+
+            if (userViewModel.reviseUserInfoState != "" && userViewModel.reviseUserInfoState != "true") {
+                AlertDialog(
+                    onDismissRequest = {
+                        userViewModel.reviseUserInfoState = ""
+                    },
+                    title = {
+                        Text(
+                            text = "提示",
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = userViewModel.reviseUserInfoState,
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            ),
+                            onClick = {
+                                userViewModel.reviseUserInfoState = ""
+                            },
+                        ){
+                            Text(
+                                text = "确认",
+                                modifier = Modifier
+                                    .wrapContentWidth(),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    },
+                    containerColor = Color(0xFF111111),
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                )
+            } else if(userViewModel.reviseUserInfoState == "true") {
+                AlertDialog(
+                    onDismissRequest = {
+                        userViewModel.reviseUserInfoState = ""
+                        onGoBack()
+                    },
+                    title = {
+                        Text(
+                            text = "提示",
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "修改成功",
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            ),
+                            onClick = {
+                                userViewModel.reviseUserInfoState = ""
+                                onGoBack()
+                            },
+                        ){
+                            Text(
+                                text = "确认",
+                                modifier = Modifier
+                                    .wrapContentWidth(),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                    },
+                    containerColor = Color(0xFF111111),
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                )
+            }
         }
     }
 }
@@ -171,9 +298,9 @@ fun ProfileModificationItem(
             )
 
             BasicTextField(
-                value = if(id == 0) userViewModel.reviseNickname else if(id == 1) userViewModel.oldPassword else if(id == 2) userViewModel.newPassword else userViewModel.newPasswordAgain,
+                value = if(id == 0) userViewModel.newNickname else if(id == 1) userViewModel.oldPassword else if(id == 2) userViewModel.newPassword else userViewModel.newPasswordAgain,
                 onValueChange = {
-                    if(id == 0) userViewModel.reviseNickname = it else if(id == 1) userViewModel.oldPassword = it else if(id == 2) userViewModel.newPassword = it else userViewModel.newPasswordAgain = it
+                    if(id == 0) userViewModel.newNickname = it else if(id == 1) userViewModel.oldPassword = it else if(id == 2) userViewModel.newPassword = it else userViewModel.newPasswordAgain = it
                                 },
                 modifier = Modifier
                     .fillMaxWidth()
