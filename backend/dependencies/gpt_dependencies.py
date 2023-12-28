@@ -40,6 +40,10 @@ tools = [
                     "date": {
                         "type": "string",
                         "description": "The date to set the alarm for, in YYYY-MM-DD format"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the alarm"
                     }
                 },
                 "required": ["time", "date"]
@@ -49,17 +53,21 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
+            "name": "get_weather",
+            "description": "Get the weather for a specific location and date",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "location": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    }
+                        "description": "城市名，如北京，也可以为 'current' 表示当前位置"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "The date to set the alarm for, in YYYY-MM-DD format"
+                    },
                 },
-                "required": ["location"],
+                "required": ["location", "date"]
             },
         },
     },
