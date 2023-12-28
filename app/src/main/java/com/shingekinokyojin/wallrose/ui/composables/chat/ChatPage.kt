@@ -22,8 +22,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -516,7 +518,8 @@ fun ChatBottomInputPart(
                     .weight(1.8f)
                     .height(40.dp)
                     .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(50.dp))
-                    .padding(0.dp),
+                    .padding(0.dp)
+                    .wrapContentWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFF7F7F)
                 )
@@ -527,7 +530,8 @@ fun ChatBottomInputPart(
                     modifier = Modifier
                         .padding(0.dp)
                         .fillMaxWidth()
-                        .wrapContentSize(Alignment.Center)
+                        .wrapContentSize(Alignment.Center),
+                    fontSize = 12.sp
                 )
             }
         }
