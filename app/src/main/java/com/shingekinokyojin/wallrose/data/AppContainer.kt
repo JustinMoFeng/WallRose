@@ -2,6 +2,8 @@ package com.shingekinokyojin.wallrose.data
 
 import com.shingekinokyojin.wallrose.network.AuthenticateApiService
 import com.shingekinokyojin.wallrose.network.ChatApiService
+import com.shingekinokyojin.wallrose.network.UserApiService
+import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 import okhttp3.OkHttpClient
 
 interface AppContainer {
@@ -17,6 +19,13 @@ class DefaultAppContainer : AppContainer {
      */
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val requestWithHeaders = originalRequest.newBuilder()
+                    .header("Authorization", "Bearer "+SharedPreferencesManager.getToken()) // 替换为你想要的头部名和值
+                    .build()
+                chain.proceed(requestWithHeaders)
+            }
             .build()
     }
 
@@ -25,6 +34,13 @@ class DefaultAppContainer : AppContainer {
      */
     private val chatApiService: ChatApiService by lazy {
         ChatApiService(baseUrl, okHttpClient)
+    }
+
+    /**
+     * api service for users
+     */
+    private val userApiService: UserApiService by lazy {
+        UserApiService(baseUrl, okHttpClient)
     }
 
     /**
@@ -45,6 +61,6 @@ class DefaultAppContainer : AppContainer {
      * DI implementation for User repository
      */
     override val userRepository: UserRepository by lazy {
-        NetworkUserRepository(authenticateApiService)
+        NetworkUserRepository(authenticateApiService, userApiService)
     }
 }

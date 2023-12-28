@@ -27,6 +27,7 @@ class ChatViewModel(
     var responding by mutableStateOf(false)
     var currentMessage by mutableStateOf("")
     var inputMessage by mutableStateOf("")
+    var chatStatus by mutableStateOf("")
 
     fun clearMessages() {
         _messages.value = emptyList()
@@ -43,7 +44,11 @@ class ChatViewModel(
         Log.d("ChatViewModel", "Sending $inputMessage")
         viewModelScope.launch(Dispatchers.IO) {
             chatsRepository.sendMessage(inputMessage).collect() { chatEvent ->
-                if (currentMessage == "...") {
+                if(chatEvent.event == "error") {
+                    chatStatus = "error"
+                    currentMessage = chatEvent.data
+                    return@collect
+                }else if (currentMessage == "...") {
                     currentMessage = ""
                 }
                 Log.d("ChatViewModel", "Received $chatEvent")

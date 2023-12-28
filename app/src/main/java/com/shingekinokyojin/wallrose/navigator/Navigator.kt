@@ -14,6 +14,7 @@ import com.shingekinokyojin.wallrose.ui.composables.chat.ChatPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfilePage
 import com.shingekinokyojin.wallrose.ui.screens.AuthenticateViewModel
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 
 @Composable
 fun WallRoseNavHost(
@@ -24,6 +25,7 @@ fun WallRoseNavHost(
 
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
     val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
+    val userViewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
 
     NavHost(
         modifier = modifier,
@@ -33,7 +35,8 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_CHAT){
             ChatPage(
                 chatViewModel = chatViewModel,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
         

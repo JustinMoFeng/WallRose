@@ -2,10 +2,12 @@ import openai
 from openai import AsyncOpenAI
 import os
 import asyncio
+from models.user_models import UserInDB
+from dependencies.auth_dependencies import get_current_user
 
 from sse_starlette.sse import EventSourceResponse
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 

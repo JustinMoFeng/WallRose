@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,9 +52,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shingekinokyojin.wallrose.R
+import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDetailAppBar
 import com.shingekinokyojin.wallrose.ui.screens.AuthenticateViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
+import okhttp3.Route
 import java.net.PasswordAuthentication
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,7 +85,8 @@ fun LoginPage(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary),
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(it),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
 
@@ -99,11 +103,13 @@ fun LoginPage(
 
                 LoginBody(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(it),
+                        .fillMaxWidth(),
                     authenticateViewModel = authenticateViewModel,
                     onGoToRegister = {
-                        navController.navigate("register")
+                        navController.navigate(RouteConfig.ROUTE_REGISTER)
+                    },
+                    onGoToChat = {
+                        navController.navigate(RouteConfig.ROUTE_CHAT)
                     }
                 )
 
@@ -121,7 +127,8 @@ fun LoginPage(
 fun LoginBody(
     modifier: Modifier = Modifier,
     authenticateViewModel: AuthenticateViewModel,
-    onGoToRegister: () -> Unit = {}
+    onGoToRegister: () -> Unit = {},
+    onGoToChat: () -> Unit = {}
 ){
     WallRoseTheme{
         var showDialog by remember { mutableStateOf(false) }
@@ -208,7 +215,10 @@ fun LoginBody(
                     .fillMaxWidth(0.8f)
                     .padding(horizontal = 8.dp, vertical = 8.dp)
                     .height(48.dp)
-                    .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium),
+                    .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
+                    .clickable {
+                        authenticateViewModel.login()
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -221,6 +231,26 @@ fun LoginBody(
                     textAlign = TextAlign.Center,
                 )
             }
+
+
+            if(authenticateViewModel.loginState != ""&&authenticateViewModel.loginState!= "true"){
+                AlertDialog(
+                    onDismissRequest = { authenticateViewModel.loginState = "" },
+                    title = { Text("提示") },
+                    text = { Text(authenticateViewModel.loginState) },
+                    confirmButton = {
+                        Button(
+                            onClick = { authenticateViewModel.loginState = "" }
+                        ) {
+                            Text("确定", color = MaterialTheme.colorScheme.tertiary)
+                        }
+                    }
+                )
+            }else if(authenticateViewModel.loginState == "true"){
+                authenticateViewModel.loginState = ""
+                onGoToChat()
+            }
+
         }
     }
 }

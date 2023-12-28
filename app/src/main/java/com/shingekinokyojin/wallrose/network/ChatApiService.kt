@@ -19,7 +19,12 @@ class ChatApiService(
                 .build()
             try {
                 okHttpClient.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    if (!response.isSuccessful){
+                        if(response.code==401){
+                            emit(ChatEvent("error", "Unauthorized"))
+                        }
+                        throw IOException("Unexpected code $response")
+                    }
 
                     // SSE
                     val source = response.body!!.source()

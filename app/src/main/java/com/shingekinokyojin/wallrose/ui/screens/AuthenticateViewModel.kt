@@ -24,6 +24,7 @@ class AuthenticateViewModel(
     var nickname by mutableStateOf("")
 
     var registerState by mutableStateOf("")
+    var loginState by mutableStateOf("")
 
     fun register() {
         viewModelScope.launch {
@@ -31,6 +32,14 @@ class AuthenticateViewModel(
             registerState = string.toString()
         }
     }
+
+    fun login() {
+        viewModelScope.launch {
+            val string = authenticateRepository.login(username, password)
+            loginState = string.toString()
+        }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

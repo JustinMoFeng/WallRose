@@ -73,7 +73,8 @@ fun RegisterPage(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary),
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(it),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
 
@@ -90,8 +91,7 @@ fun RegisterPage(
 
                 RegisterBody(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(it),
+                        .fillMaxWidth(),
                     authenticateViewModel = authenticateViewModel,
                     onGoToLogin = {
                         navController.navigate("login")

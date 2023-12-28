@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
@@ -64,7 +65,9 @@ import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
+import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
 
@@ -73,7 +76,7 @@ import kotlinx.coroutines.launch
 fun ChatPage(
     modifier: Modifier = Modifier,
     chatViewModel: ChatViewModel,
-    navController: NavController
+    navController: NavController,
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -118,8 +121,35 @@ fun ChatPage(
                 inputMessage = chatViewModel.inputMessage,
                 changeText = { chatViewModel.inputMessage = it },
                 sendAction = {
-                    navController.navigate(RouteConfig.ROUTE_LOGIN)
-                    chatViewModel.sendMessage()
+                    if(SharedPreferencesManager.getToken()==""){
+                        navController.navigate(RouteConfig.ROUTE_LOGIN)
+                    }else{
+                        chatViewModel.sendMessage()
+                    }
+                }
+            )
+        }
+
+        if(chatViewModel.chatStatus == "error") {
+            AlertDialog(
+                onDismissRequest = {
+                    chatViewModel.chatStatus = ""
+                },
+                title = {
+                    Text(text = "Error")
+                },
+                text = {
+                    Text(text = chatViewModel.currentMessage)
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            chatViewModel.chatStatus = ""
+                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
                 }
             )
         }

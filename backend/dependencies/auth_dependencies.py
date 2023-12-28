@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 import os
 from fastapi.security import OAuth2PasswordBearer
 from models.user_models import UserInDB, TokenData
-from jose import JWTError
+from jose import JWTError,ExpiredSignatureError
 from database import get_user_collection
 from dotenv import load_dotenv
 
@@ -63,7 +63,7 @@ async def authenticate_user(username: str, password: str):
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="token失效，请重新登陆",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -72,6 +72,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username,user_id=payload.get("user_id"))
+    except ExpiredSignatureError:
+        raise credentials_exception
     except JWTError:
         raise credentials_exception
     user = await get_user(token_data.username)
