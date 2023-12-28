@@ -3,6 +3,9 @@ from openai import AsyncOpenAI
 import os
 import asyncio
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from sse_starlette.sse import EventSourceResponse
 
 from fastapi import APIRouter
@@ -19,7 +22,7 @@ async def gpt_api_stream(prompt):
             base_url = os.getenv("BASE_URL")
         )
         stream = await client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo-1106",
             messages=[
                 {
                     "role": "user",
@@ -29,10 +32,10 @@ async def gpt_api_stream(prompt):
             stream=True,
         )
         async for chunk in stream:
-            print(chunk.choices[0].delta.content or "", end="")
+            print(chunk.choices[0].delta.content or "", end="", flush=True)
     except Exception as err:
-        return f"OpenAI API 异常: {err}"
-    
+        print(f"OpenAI API 异常: {err}")    
+
 async def produce_greeting_stream():
     """
     每秒钟返回 Greeting 中的一个字母
@@ -50,4 +53,6 @@ async def greeting_stream():
 
 if __name__ == "__main__":
     prompt = "There are 9 birds in the tree, the hunter shoots one, how many birds are left in the tree？"
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(gpt_api_stream(prompt))
+    print("Done")

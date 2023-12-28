@@ -1,4 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import config
 
@@ -10,8 +11,11 @@ def connect_mongo():
 
 mongodb = connect_mongo()
 
-def get_collection(db, collection_name: str):
-    return db[collection_name]
+def get_collection(collection_name: str):
+    return mongodb[collection_name]
 
 def get_user_collection():
-    return get_collection(mongodb, "users")
+    return get_collection("users")
+
+def get_chat_collection():
+    return get_collection("chats")
