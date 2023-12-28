@@ -258,7 +258,7 @@ fun RegisterBody(
                 AlertDialog(
                     onDismissRequest = { showFailureDialog = false },
                     title = { Text("提示") },
-                    text = { Text("") },
+                    text = { Text("注册成功") },
                     confirmButton = {
                         Button(
                             onClick = {
