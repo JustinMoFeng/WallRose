@@ -11,6 +11,7 @@ import com.shingekinokyojin.wallrose.WallRoseApplication
 import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.LoginPage
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.RegisterPage
+import com.shingekinokyojin.wallrose.ui.composables.chat.ChatHistoryPage
 import com.shingekinokyojin.wallrose.ui.composables.chat.ChatPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileDetailPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileModificationPage
@@ -38,7 +39,8 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_CHAT){
             ChatPage(
                 chatViewModel = chatViewModel,
-                navController = navController
+                navController = navController,
+                userViewModel = userViewModel
             )
         }
         
@@ -46,7 +48,8 @@ fun WallRoseNavHost(
             ProfilePage(
                 navController = navController,
                 userViewModel = userViewModel,
-                url = url
+                url = url,
+                chatViewModel = chatViewModel
             )
         }
 
@@ -60,7 +63,7 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_REGISTER){
             RegisterPage(
                 authenticateViewModel = authenticateViewModel,
-                navController = navController
+                navController = navController,
             )
         }
 
@@ -76,6 +79,13 @@ fun WallRoseNavHost(
             ProfileModificationPage(
                 navController = navController,
                 userViewModel = userViewModel
+            )
+        }
+
+        composable(RouteConfig.ROUTE_CHAT_HISTORY){
+            ChatHistoryPage(navController = navController
+                , userViewModel = userViewModel,
+                chatViewModel = chatViewModel
             )
         }
 

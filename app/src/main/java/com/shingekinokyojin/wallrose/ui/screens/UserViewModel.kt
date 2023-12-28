@@ -39,12 +39,13 @@ class UserViewModel(
     var oldPassword by mutableStateOf("")
     var newPassword by mutableStateOf("")
     var newPasswordAgain by mutableStateOf("")
-
-    var chatHistory: List<String> by mutableStateOf(listOf())
+    var chatHistory: List<Chat> by mutableStateOf(listOf())
     var chosenChatHistory: Chat? by mutableStateOf(null)
+
 
     fun getChatHistory() {
         viewModelScope.launch {
+            chatHistory = listOf()
             val string = userRepository.getChatHistory()
             Log.d("UserViewModel", "getChatHistory: $string")
             for (chat in string) {
@@ -52,13 +53,15 @@ class UserViewModel(
                 if(messages.size>=2){
                     val secondMessage = messages[1]
                     if(secondMessage is UserMessage){
-                        chatHistory = chatHistory + secondMessage.content
+                        chatHistory = chatHistory + chat
                     }else if(secondMessage is AssistantMessage){
-                        chatHistory = chatHistory + secondMessage.content.toString()
+                        chatHistory = chatHistory + chat
                     }
                 }
             }
-
+            if(chosenChatHistory == null && chatHistory.isNotEmpty()){
+                chosenChatHistory = chatHistory[0]
+            }
         }
     }
 

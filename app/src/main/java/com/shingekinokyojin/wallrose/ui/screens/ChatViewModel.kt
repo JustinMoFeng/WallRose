@@ -61,6 +61,8 @@ class ChatViewModel(
     var haveLocation by mutableStateOf(false)
     var gettingLocation by mutableStateOf(false)
 
+    var showWordPart by mutableStateOf(false)
+
 
     init {
         viewModelScope.launch{
@@ -149,7 +151,7 @@ class ChatViewModel(
             intent.apply {
                 putExtra(AlarmClock.EXTRA_HOUR, hour)
                 putExtra(AlarmClock.EXTRA_MINUTES, minute)
-                putExtra(AlarmClock.EXTRA_MESSAGE, "米奇妙妙屋")
+                putExtra(AlarmClock.EXTRA_MESSAGE, AlarmArg.name)
                 putExtra(AlarmClock.EXTRA_VIBRATE, true)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

@@ -64,7 +64,7 @@ tools = [
                     },
                     "date": {
                         "type": "string",
-                        "description": "The date to set the alarm for, in YYYY-MM-DD format"
+                        "description": "The date to get the weather for, in YYYY-MM-DD format"
                     },
                 },
                 "required": ["location", "date"]

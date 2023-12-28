@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,6 +36,7 @@ import com.shingekinokyojin.wallrose.model.Chat
 import com.shingekinokyojin.wallrose.model.Message
 import com.shingekinokyojin.wallrose.model.UserMessage
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDetailAppBar
+import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 
@@ -42,7 +45,8 @@ import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 fun ChatHistoryPage(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    chatViewModel: ChatViewModel
 ){
     WallRoseTheme {
         Scaffold(
@@ -52,16 +56,28 @@ fun ChatHistoryPage(
                 WallRoseDetailAppBar(
                     modifier = Modifier.fillMaxWidth(),
                     title = "聊天历史",
+                    onLeftClick = {
+                        navController.popBackStack()
+                    }
                 )
             }
         ) {
             ChatHistoryBody(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .padding(it),
                 chatHistory = userViewModel.chosenChatHistory,
-                userViewModel= userViewModel
+                userViewModel= userViewModel,
+                onGoChat = {
+                    chatViewModel.currentChatId = userViewModel.chosenChatHistory?._id.toString()
+                    // 获取最后一条message
+                    val lastMessage = userViewModel.chosenChatHistory?.messages?.last()
+                    chatViewModel.currentMessage = if(lastMessage is AssistantMessage) lastMessage.content.toString() else ""
+                    navController.navigate("chat")
+                }
             )
+            
+            
         }
     }
 
@@ -71,7 +87,8 @@ fun ChatHistoryPage(
 fun ChatHistoryBody(
     modifier: Modifier = Modifier,
     chatHistory: Chat?,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    onGoChat: () -> Unit
 ) {
     WallRoseTheme{
         if (chatHistory != null) {
@@ -108,6 +125,22 @@ fun ChatHistoryBody(
                     }
 
                 }
+                
+                Button(
+                    onClick = {
+                        onGoChat()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.tertiary
+                    )
+                ) {
+                    Text(text = "继续本聊天")
+                }
+                
             }
 
         }
@@ -133,10 +166,13 @@ fun ChatHistoryItem(
             )
         } else if (type == 1) {
             val t = message as AssistantMessage
-            ChatGPTMessage(
-                modifier = modifier,
-                message = t
-            )
+            if(message.content != null && message.content != ""){
+                ChatGPTMessage(
+                    modifier = modifier,
+                    message = t
+                )
+            }
+
         }
     }
 

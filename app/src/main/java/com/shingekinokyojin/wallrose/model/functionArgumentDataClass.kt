@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AlarmArgument(
     val date: String,
-    val time: String
+    val time: String,
+    val name: String
 )
 
 @Serializable

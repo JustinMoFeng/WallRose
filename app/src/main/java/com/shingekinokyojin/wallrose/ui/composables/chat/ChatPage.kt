@@ -44,6 +44,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -52,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -79,6 +81,7 @@ import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch
@@ -89,7 +92,8 @@ import kotlinx.coroutines.launch
 fun ChatPage(
     modifier: Modifier = Modifier,
     chatViewModel: ChatViewModel,
-    navController: NavController
+    navController: NavController,
+    userViewModel: UserViewModel
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -105,102 +109,117 @@ fun ChatPage(
                 onLeftClick = {
                     if(drawerState.isOpen) scope.launch { drawerState.close() }
                     else scope.launch { drawerState.open() }
+                },
+                onRightClick = {
+                    if(chatViewModel.currentChatId!="") {
+                        userViewModel.getChatHistory()
+                        navController.navigate(RouteConfig.ROUTE_CHAT_HISTORY)
+                    }
                 }
             )
         },
 
     ) {
-        ModalNavigationDrawer(
-            drawerContent = {
-                WallRoseDrawer(
-                    navController = navController,
-                    modifier = Modifier
-                        .fillMaxWidth(0.648f)
-                        .fillMaxHeight()
-                        .padding(it)
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            gesturesEnabled = false,
-            drawerState = drawerState,
-        ) {
 
-            ChatBody(
+            ModalNavigationDrawer(
+                drawerContent = {
+                    WallRoseDrawer(
+                        navController = navController,
+                        modifier = Modifier
+                            .fillMaxWidth(0.648f)
+                            .fillMaxHeight()
+                            .padding(it)
+                    )
+                },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                currentMessage = chatViewModel.currentMessage,
-                inputMessage = chatViewModel.inputMessage,
-                changeText = { chatViewModel.inputMessage = it },
-                sendAction = {
-                    if(SharedPreferencesManager.getToken()==""){
-                        navController.navigate(RouteConfig.ROUTE_LOGIN)
-                    }else{
-                        Log.d("ChatPage", "sendAction")
-                        chatViewModel.sendMessage(chatViewModel.inputMessage)
-                    }
-                }
-            )
-            if(!chatViewModel.haveLocation&&chatViewModel.gettingLocation){
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                gesturesEnabled = false,
+                drawerState = drawerState,
+            ) {
 
-                LaunchedEffect(key1 = true) {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${MainActivity.instance?.packageName}"))
-                    MainActivity.instance?.startActivity(intent)
-                    chatViewModel.haveLocation = true
-                    chatViewModel.gettingLocation = false
+
+
+                ChatBody(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
+                    currentMessage = chatViewModel.currentMessage,
+                    inputMessage = chatViewModel.inputMessage,
+                    changeText = { chatViewModel.inputMessage = it },
+                    sendAction = {
+                        if (SharedPreferencesManager.getToken() == "") {
+                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+                        } else {
+                            Log.d("ChatPage", "sendAction")
+                            chatViewModel.sendMessage(chatViewModel.inputMessage)
+                        }
+                    }
+                )
+                if (!chatViewModel.haveLocation && chatViewModel.gettingLocation) {
+
+                    LaunchedEffect(key1 = true) {
+                        val intent = Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:${MainActivity.instance?.packageName}")
+                        )
+                        MainActivity.instance?.startActivity(intent)
+                        chatViewModel.haveLocation = true
+                        chatViewModel.gettingLocation = false
+                    }
                 }
             }
-        }
 
-        if(chatViewModel.chatStatus == "error") {
-            AlertDialog(
-                onDismissRequest = {
-                    chatViewModel.chatStatus = ""
-                },
-                title = {
-                    Text(text = "Error")
-                },
-                text = {
-                    Text(text = chatViewModel.currentMessage)
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            chatViewModel.chatStatus = ""
-                            navController.navigate(RouteConfig.ROUTE_LOGIN)
-                        }
-                    ) {
-                        Text(text = "OK")
-                    }
-                }
-            )
-        }
 
-        if(!chatViewModel.loginStatus){
-            AlertDialog(
-                onDismissRequest = {
-                    chatViewModel.loginStatus = true
-                },
-                title = {
-                    Text(text = "提示")
-                },
-                text = {
-                    Text(text = "尚未登陆")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            chatViewModel.loginStatus = true
-                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+
+            if(chatViewModel.chatStatus == "error") {
+                AlertDialog(
+                    onDismissRequest = {
+                        chatViewModel.chatStatus = ""
+                    },
+                    title = {
+                        Text(text = "Error")
+                    },
+                    text = {
+                        Text(text = chatViewModel.currentMessage)
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                chatViewModel.chatStatus = ""
+                                navController.navigate(RouteConfig.ROUTE_LOGIN)
+                            }
+                        ) {
+                            Text(text = "OK")
                         }
-                    ) {
-                        Text(text = "OK")
                     }
-                }
-            )
-        }
+                )
+            }
+
+            if(!chatViewModel.loginStatus){
+                AlertDialog(
+                    onDismissRequest = {
+                        chatViewModel.loginStatus = true
+                    },
+                    title = {
+                        Text(text = "提示")
+                    },
+                    text = {
+                        Text(text = "尚未登陆")
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                chatViewModel.loginStatus = true
+                                navController.navigate(RouteConfig.ROUTE_LOGIN)
+                            }
+                        ) {
+                            Text(text = "OK")
+                        }
+                    }
+                )
+            }
+
 
     }
 
@@ -282,15 +301,28 @@ fun ChatLive2d(
 
                 val lifecycleObserver = LifecycleEventObserver { _, event ->
                     when (event) {
-                        Lifecycle.Event.ON_START -> LAppMinimumDelegate.getInstance().onStart(MainActivity.instance)
-                        Lifecycle.Event.ON_RESUME -> glSurfaceView.onResume()
+                        Lifecycle.Event.ON_START -> {
+                            Log.d("ChatLive2d", "ON_START")
+                            LAppMinimumDelegate.getInstance().onStart(MainActivity.instance)
+                        }
+                        Lifecycle.Event.ON_RESUME -> {
+                            Log.d("ChatLive2d", "ON_RESUME")
+                            glSurfaceView.onResume()
+                        }
                         Lifecycle.Event.ON_PAUSE -> {
+                            Log.d("ChatLive2d", "ON_PAUSE")
                             glSurfaceView.onPause()
                             LAppMinimumDelegate.getInstance().onPause()
                         }
 
-                        Lifecycle.Event.ON_STOP -> LAppMinimumDelegate.getInstance().onStop()
-                        Lifecycle.Event.ON_DESTROY -> LAppMinimumDelegate.getInstance().onDestroy()
+                        Lifecycle.Event.ON_STOP -> {
+                            Log.d("ChatLive2d", "ON_STOP")
+                            LAppMinimumDelegate.getInstance().onStop()
+                        }
+                        Lifecycle.Event.ON_DESTROY ->{
+                            Log.d("ChatLive2d", "ON_DESTROY")
+                            LAppMinimumDelegate.getInstance().onDestroy()
+                        }
                         else -> {}
                     }
                 }
@@ -390,7 +422,8 @@ fun ChatMyMessage(
                 modifier = Modifier
                     .size(40.dp)
                     .padding(start = 5.dp, top = 5.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop
             )
 
             Column(

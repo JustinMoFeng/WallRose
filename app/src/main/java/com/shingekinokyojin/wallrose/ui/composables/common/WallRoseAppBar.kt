@@ -36,7 +36,8 @@ import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 fun WallRoseTabAppBar(
     modifier: Modifier = Modifier,
     title: String = "WallRose",
-    onLeftClick: () -> Unit = {}
+    onLeftClick: () -> Unit = {},
+    onRightClick: () -> Unit = {}
 ){
     val context = LocalContext.current
     WallRoseTheme {
@@ -72,16 +73,7 @@ fun WallRoseTabAppBar(
 
             // 开启悬浮窗按钮
             IconButton(onClick = {
-//                if (!Settings.canDrawOverlays(context)) {
-//                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
-//                    context.startActivity(intent)
-//                    // 你可能需要一种方式来检查用户从设置返回后权限的状态
-//                } else {
-//                    // 如果已经有权限了，那么就开启悬浮窗
-//                    val intent = Intent(context, FloatingWindowService::class.java)
-//                    context.startService(intent)
-//                }
-
+                onRightClick()
             }) {
                 Image(
                     modifier = Modifier.size(30.dp),

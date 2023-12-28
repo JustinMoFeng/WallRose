@@ -49,8 +49,12 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
+import com.shingekinokyojin.wallrose.model.AssistantMessage
+import com.shingekinokyojin.wallrose.model.Chat
+import com.shingekinokyojin.wallrose.model.UserMessage
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
+import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
@@ -61,6 +65,7 @@ fun ProfilePage(
     modifier: Modifier = Modifier,
     navController: NavController,
     userViewModel: UserViewModel,
+    chatViewModel: ChatViewModel,
     url: String
 ){
 
@@ -158,7 +163,13 @@ fun ProfilePage(
                     modifier = Modifier
                         .padding(it),
                     userViewModel = userViewModel,
-                    url = url
+                    url = url,
+                    onGoChat = {
+                        chatViewModel.currentMessage = ""
+                        chatViewModel.currentChatId = ""
+                        userViewModel.chosenChatHistory = null
+                        navController.navigate(RouteConfig.ROUTE_CHAT)
+                    }
                 )
             }
 
@@ -174,6 +185,7 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     navController: NavController,
     userViewModel: UserViewModel,
+    onGoChat : () -> Unit,
     url: String
 ){
     WallRoseTheme {
@@ -199,7 +211,9 @@ fun ProfileContent(
                 contentList = userViewModel.chatHistory,
                 modifier = Modifier
                     .weight(5f)
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 20.dp),
+                userViewModel = userViewModel,
+                navController = navController
             )
 
             Spacer(
@@ -207,7 +221,9 @@ fun ProfileContent(
             )
 
             Button(
-                onClick = { navController.navigate(RouteConfig.ROUTE_CHAT) },
+                onClick = {
+                    onGoChat()
+                          },
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -297,13 +313,19 @@ fun ProfileUserPart(
 @Composable
 fun ProfileUserChatHistoryItem(
     modifier: Modifier = Modifier,
-    chatHistoryContent: String = "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+    chatHistoryContent: Chat,
+    userViewModel: UserViewModel,
+    navController: NavController
 ){
     WallRoseTheme {
         Column(
             modifier = modifier
                 .background(color = MaterialTheme.colorScheme.primary)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable {
+                    userViewModel.chosenChatHistory = chatHistoryContent
+                    navController.navigate(RouteConfig.ROUTE_CHAT_HISTORY)
+                },
             verticalArrangement = Arrangement.Center
         ) {
             Row(
@@ -324,9 +346,10 @@ fun ProfileUserChatHistoryItem(
 
                 Spacer(modifier = Modifier.weight(0.2f))
 
+                val t = chatHistoryContent.messages[1]
                 // text 溢出自动隐藏
                 Text(
-                    text = chatHistoryContent,
+                    text = if(t is UserMessage) t.content else if(t is AssistantMessage)t.content.toString() else "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.tertiary,
                     maxLines = 1,
@@ -352,7 +375,9 @@ fun ProfileUserChatHistoryItem(
 @Composable
 fun ProfileUserChatHistory(
     modifier: Modifier = Modifier,
-    contentList: List<String>
+    contentList: List<Chat>,
+    userViewModel: UserViewModel,
+    navController: NavController
 ){
     WallRoseTheme {
         Column(
@@ -402,7 +427,9 @@ fun ProfileUserChatHistory(
                     ProfileUserChatHistoryItem(
                         modifier = Modifier
                             .fillMaxWidth(0.9f),
-                        chatHistoryContent = content
+                        chatHistoryContent = content,
+                        userViewModel = userViewModel,
+                        navController = navController
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                 }
@@ -425,31 +452,31 @@ fun PreviewProfileUserPart(){
     )
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun PreviewProfileUserChatHistoryItem(){
-    ProfileUserChatHistoryItem()
-}
+//@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+//@Composable
+//fun PreviewProfileUserChatHistoryItem(){
+//    ProfileUserChatHistoryItem()
+//}
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun PreviewProfileUserChatHistory(){
-    ProfileUserChatHistory(
-        contentList = listOf(
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？"
-        )
-    )
-}
+//@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+//@Composable
+//fun PreviewProfileUserChatHistory(){
+//    ProfileUserChatHistory(
+//        contentList = listOf(
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
+//            "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？"
+//        )
+//    )
+//}
 
 //@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 //@Composable

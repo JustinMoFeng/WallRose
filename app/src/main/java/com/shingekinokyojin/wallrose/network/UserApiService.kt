@@ -132,7 +132,7 @@ class UserApiService(
 
     suspend fun getChatHistory(): List<Chat> = withContext(Dispatchers.IO) {
         val request = okhttp3.Request.Builder()
-            .url("$url/chats/list?page=1&size=20")
+            .url("$url/chats/list?page=1&page_size=20")
             .get()
             .build()
 
