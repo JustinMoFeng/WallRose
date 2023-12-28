@@ -3,6 +3,7 @@ package com.shingekinokyojin.wallrose.ui.composables.authenticate
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -33,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -187,11 +191,23 @@ fun RegisterBody(
                         text = { Text("找回密码功能暂未开通") },
                         confirmButton = {
                             Button(
-                                onClick = { showDialog = false }
+                                onClick = { showDialog = false },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
+                                )
                             ) {
                                 Text("确定", color = MaterialTheme.colorScheme.tertiary)
                             }
-                        }
+                        },
+                        containerColor = Color(0xFF111111),
+                        textContentColor = MaterialTheme.colorScheme.tertiary,
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                     )
                 }
 
@@ -218,6 +234,11 @@ fun RegisterBody(
                     .height(48.dp)
                     .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
                     .clickable {
+                                    if(authenticateViewModel.username.isEmpty()||authenticateViewModel.nickname.isEmpty()||authenticateViewModel.password.isEmpty()){
+                                        authenticateViewModel.registerState = "请填写完整信息"
+                                        showFailureDialog = true
+                                        return@clickable
+                                    }
                                     authenticateViewModel.register()
                                },
                 contentAlignment = Alignment.Center
@@ -244,11 +265,23 @@ fun RegisterBody(
                                 authenticateViewModel.registerState = ""
                                 showFailureDialog = false
                                 onGoToLogin()
-                            }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
                         ) {
                             Text("确定", color = MaterialTheme.colorScheme.tertiary)
                         }
-                    }
+                    },
+                    containerColor = Color(0xFF111111),
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
                 )
             }else if(authenticateViewModel.registerState!=""){
                 AlertDialog(
@@ -260,11 +293,23 @@ fun RegisterBody(
                             onClick = {
                                 authenticateViewModel.registerState = ""
                                 showFailureDialog = false
-                            }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
                         ) {
                             Text("确定", color = MaterialTheme.colorScheme.tertiary)
                         }
-                    }
+                    },
+                    containerColor = Color(0xFF111111),
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
                 )
             }
 

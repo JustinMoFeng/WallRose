@@ -3,6 +3,7 @@ package com.shingekinokyojin.wallrose.ui.composables.authenticate
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -166,11 +170,23 @@ fun LoginBody(
                         text = { Text("找回密码功能暂未开通") },
                         confirmButton = {
                             Button(
-                                onClick = { showDialog = false }
+                                onClick = { showDialog = false },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
+                                )
                             ) {
                                 Text("确定", color = MaterialTheme.colorScheme.tertiary)
                             }
-                        }
+                        },
+                        containerColor = Color(0xFF111111),
+                        textContentColor = MaterialTheme.colorScheme.tertiary,
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                     )
                 }
 
@@ -196,6 +212,10 @@ fun LoginBody(
                     .height(48.dp)
                     .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
                     .clickable {
+                        if(authenticateViewModel.username == "" || authenticateViewModel.password == ""){
+                            authenticateViewModel.loginState = "用户名或密码不能为空"
+                            return@clickable
+                        }
                         authenticateViewModel.login()
                     },
                 contentAlignment = Alignment.Center
@@ -219,11 +239,23 @@ fun LoginBody(
                     text = { Text(authenticateViewModel.loginState) },
                     confirmButton = {
                         Button(
-                            onClick = { authenticateViewModel.loginState = "" }
+                            onClick = { authenticateViewModel.loginState = "" },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
                         ) {
                             Text("确定", color = MaterialTheme.colorScheme.tertiary)
                         }
-                    }
+                    },
+                    containerColor = Color(0xFF111111),
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
                 )
             }else if(authenticateViewModel.loginState == "true"){
                 authenticateViewModel.loginState = ""

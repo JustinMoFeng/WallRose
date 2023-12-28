@@ -1,10 +1,12 @@
 package com.shingekinokyojin.wallrose.ui.screens
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -13,7 +15,7 @@ import com.shingekinokyojin.wallrose.data.UserRepository
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val UserRepository: UserRepository
+    private val userRepository: UserRepository
 ) :ViewModel() {
 
     var myUsername by mutableStateOf("")
@@ -23,12 +25,12 @@ class UserViewModel(
 
     fun getUserInfo() {
         viewModelScope.launch {
-            val stringArr = UserRepository.getMeInfo()
+            val stringArr = userRepository.getMeInfo()
             userInfoStatus = stringArr[0]
             if(stringArr[0] == "true") {
-                myUsername = stringArr[0]
-                myNickname = stringArr[1]
-                myAvatarUrl = stringArr[2]
+                myUsername = stringArr[1]
+                myNickname = stringArr[2]
+                myAvatarUrl = stringArr[3]
             }
         }
     }
@@ -37,9 +39,9 @@ class UserViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as WallRoseApplication)
-                val authenticateRepository = application.container.userRepository
-                UserViewModel(authenticateRepository)
+                val application = (this[APPLICATION_KEY] as WallRoseApplication)
+                val userRepository = application.container.userRepository
+                UserViewModel(userRepository)
             }
         }
     }

@@ -8,4 +8,6 @@ object RouteConfig {
     const val ROUTE_LOGIN = "login"
 
     const val ROUTE_REGISTER = "register"
+
+    const val ROUTE_PROFILE_DETAIL = "profile_detail"
 }

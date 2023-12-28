@@ -24,17 +24,17 @@ class UserApiService(
             okHttpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful){
                     val errorResponse = Json.decodeFromString<AuthenticateErrorResult>(response.body!!.string())
-                    Log.e("AuthenticateApiService", "Error: ${errorResponse.detail}")
+                    Log.e("UserApiService", "Error: ${errorResponse.detail}")
                     arrayOf(errorResponse.detail)
                 }else {
                     val responseBody = Json.decodeFromString<UserInfoResult>(response.body!!.string())
-                    Log.d("AuthenticateApiService", "Success: ${responseBody.toString()}")
+                    Log.d("UserApiService", "Success: ${responseBody.toString()}")
 
-                    arrayOf("true", responseBody.username, responseBody.nickname, responseBody.avatarUrl)
+                    arrayOf("true", responseBody.username, responseBody.nickname, responseBody.avatarUrl ?: "")
                 }
             }
         }catch (e: Exception){
-            Log.e("AuthenticateApiService", "Error: ${e.message}")
+            Log.e("UserApiService", "Error: ${e.message}")
             arrayOf(e.message!!)
         }
     }

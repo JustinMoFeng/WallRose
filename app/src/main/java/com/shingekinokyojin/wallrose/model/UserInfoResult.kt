@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class UserInfoResult (
     val username: String,
     val nickname: String,
-    val avatarUrl: String
+    val avatarUrl: String?,
+    val password: String?
 )
