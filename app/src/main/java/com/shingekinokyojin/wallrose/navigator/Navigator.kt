@@ -35,8 +35,7 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_CHAT){
             ChatPage(
                 chatViewModel = chatViewModel,
-                navController = navController,
-                userViewModel = userViewModel
+                navController = navController
             )
         }
         
