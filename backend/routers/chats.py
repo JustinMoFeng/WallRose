@@ -1,5 +1,4 @@
-import os
-import asyncio
+import json
 
 from openai import AsyncOpenAI
 from sse_starlette.sse import EventSourceResponse
@@ -184,7 +183,7 @@ async def send_message(
         collection.update_one({"_id": ObjectId(chat_id)},{"$set": chat.model_dump(by_alias=True)})
 
         for tool_call in tool_calls:
-            yield {"event": "tool_call", "data": tool_call}
+            yield {"event": "tool_call", "data": json.dumps(tool_call)}
 
     return EventSourceResponse(produce_gpt_stream())
 
