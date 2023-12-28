@@ -29,7 +29,7 @@ async def get_chats_list(
     """
     offset = (page-1)*page_size
     print(user.user_id)
-    chats = await collection.find({"owner": str(user.user_id)}).skip(offset).limit(page_size).to_list(None)
+    chats = await collection.find({"owner": str(user.user_id)}).sort("_id", -1).skip(offset).limit(page_size).to_list(None)
     return chats
 
 @router.get("/chats/{chat_id}", response_model=Chat)
