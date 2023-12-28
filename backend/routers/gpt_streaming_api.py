@@ -2,13 +2,15 @@ import openai
 from openai import AsyncOpenAI
 import os
 import asyncio
+from models.user_models import UserInDB
+from dependencies.auth_dependencies import get_current_user
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from sse_starlette.sse import EventSourceResponse
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 
@@ -40,7 +42,7 @@ async def produce_greeting_stream():
     """
     每秒钟返回 Greeting 中的一个字母
     """
-    for char in "你好，我是牧濑红莉栖，有什么问题吗":
+    for char in "你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗你好，我是牧濑红莉栖，有什么问题吗":
         yield {"event": "greeting", "data": char}
         await asyncio.sleep(0.2)
     

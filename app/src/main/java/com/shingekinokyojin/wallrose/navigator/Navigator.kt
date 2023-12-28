@@ -11,19 +11,25 @@ import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.LoginPage
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.RegisterPage
 import com.shingekinokyojin.wallrose.ui.composables.chat.ChatPage
+import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileDetailPage
+import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileModificationPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfilePage
 import com.shingekinokyojin.wallrose.ui.screens.AuthenticateViewModel
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 
 @Composable
 fun WallRoseNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = RouteConfig.ROUTE_CHAT
+    startDestination: String = RouteConfig.ROUTE_CHAT,
 ){
 
+
+    val url = "http://192.168.31.140:8000"
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
     val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
+    val userViewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
 
     NavHost(
         modifier = modifier,
@@ -38,7 +44,11 @@ fun WallRoseNavHost(
         }
         
         composable(RouteConfig.ROUTE_PROFILE){
-            ProfilePage(navController = navController)
+            ProfilePage(
+                navController = navController,
+                userViewModel = userViewModel,
+                url = url
+            )
         }
 
         composable(RouteConfig.ROUTE_LOGIN){
@@ -54,5 +64,22 @@ fun WallRoseNavHost(
                 navController = navController
             )
         }
+
+        composable(RouteConfig.ROUTE_PROFILE_DETAIL){
+            ProfileDetailPage(
+                navController = navController,
+                userViewModel = userViewModel,
+                url = url
+            )
+        }
+
+        composable(RouteConfig.ROUTE_PROFILE_MODIFICATION){
+            ProfileModificationPage(
+                navController = navController,
+                userViewModel = userViewModel
+            )
+        }
+
+
     }
 }

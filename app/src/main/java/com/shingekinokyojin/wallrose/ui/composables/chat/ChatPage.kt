@@ -16,13 +16,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
@@ -45,6 +50,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +62,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.shingekinokyojin.wallrose.MainActivity
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
@@ -64,7 +72,9 @@ import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
+import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
 
@@ -73,10 +83,11 @@ import kotlinx.coroutines.launch
 fun ChatPage(
     modifier: Modifier = Modifier,
     chatViewModel: ChatViewModel,
-    navController: NavController
+    navController: NavController,
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    if(chatViewModel.currentMessage=="")chatViewModel.getGreeting()
 
     Scaffold(
         modifier = modifier,
@@ -118,8 +129,35 @@ fun ChatPage(
                 inputMessage = chatViewModel.inputMessage,
                 changeText = { chatViewModel.inputMessage = it },
                 sendAction = {
-                    navController.navigate(RouteConfig.ROUTE_LOGIN)
-                    chatViewModel.sendMessage()
+                    if(SharedPreferencesManager.getToken()==""){
+                        navController.navigate(RouteConfig.ROUTE_LOGIN)
+                    }else{
+                        Log.d("ChatPage", "sendAction")
+                    }
+                }
+            )
+        }
+
+        if(chatViewModel.chatStatus == "error") {
+            AlertDialog(
+                onDismissRequest = {
+                    chatViewModel.chatStatus = ""
+                },
+                title = {
+                    Text(text = "Error")
+                },
+                text = {
+                    Text(text = chatViewModel.currentMessage)
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            chatViewModel.chatStatus = ""
+                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
                 }
             )
         }
@@ -233,7 +271,6 @@ fun ChatLive2d(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .align(Alignment.BottomCenter)
-                .height(180.dp)
                 .padding(bottom = 30.dp),
             word = currentMessage
         )
@@ -247,31 +284,110 @@ fun ChatFeedBack(
 ){
     Box(modifier = modifier
         .fillMaxWidth()
+        .requiredHeightIn(min = 120.dp, max = 220.dp)
         .background(color = MaterialTheme.colorScheme.background, RoundedCornerShape(15.dp))
         .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp)),
         contentAlignment = Alignment.TopCenter,
 
     ){
-        Text(
-            text = word,
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentSize(Alignment.TopCenter)
-                .padding(top = 10.dp),
-            textAlign = TextAlign.Center,
-            style = TextStyle(
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.tertiary
-            ),
-        )
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 10.dp)
+        ) {
+            Text(
+                text = word,
+                modifier = modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.tertiary
+                ),
+            )
+        }
     }
 
 }
 
 @Composable
-fun ChatMyMessage(
-    modifier: Modifier
+fun ChatTextBody(
+    modifier: Modifier = Modifier
 ){
+    WallRoseTheme {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 10.dp, end = 10.dp)
+        ) {
+
+        }
+    }
+}
+
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun ChatMyMessage(
+    modifier: Modifier,
+    myAvatarUrl: String,
+    myMessage: String,
+    myUserName: String
+){
+    WallRoseTheme{
+
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Top
+        ) {
+            Image(
+                painter = rememberImagePainter(myAvatarUrl),
+                contentDescription = "Avatar",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(start = 5.dp, top = 5.dp)
+                    .clip(RoundedCornerShape(10.dp))
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentHeight()
+                    .padding(start = 10.dp, end = 10.dp),
+            ) {
+
+                Text(
+                    text = myUserName,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(vertical = 5.dp),
+                    textAlign = TextAlign.Start,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    ),
+                )
+
+                Text(
+                    text = myMessage,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    textAlign = TextAlign.Start,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.tertiary
+                    ),
+                )
+            }
+        }
+    }
 
 }
 
@@ -403,5 +519,24 @@ fun ChatLive2dPreview(){
             .fillMaxWidth()
             .fillMaxHeight(),
         currentMessage = "123"
+    )
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true, backgroundColor = 0xFF300000)
+@Composable
+fun ChatMyMessagePreview(){
+    ChatMyMessage(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        myAvatarUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png",
+        myMessage = "在 Android Studio 中，使用 Jetpack Compose 的 @Preview 注解时，您可能会发现无法预览从网络加载的图片。这是因为 @Preview 功能有一些限制，主要包括：\n" +
+                "\n" +
+                "网络访问限制：@Preview 注解仅用于在 Android Studio 中以静态方式展示 UI 组件的布局和样式。它不支持网络访问，因此无法直接加载网络图片。\n" +
+                "\n" +
+                "执行环境：@Preview 在 Android Studio 的设计视图中运行，而非真实的设备或模拟器环境。因此，它不执行完整的运行时操作，如网络请求。\n" +
+                "\n" +
+                "安全性和性能：限制网络访问可以保护您的计算机免受潜在的不安全内容的影响，并且可以提高预览的生成速度。",
+        myUserName = "ChatGPT"
     )
 }

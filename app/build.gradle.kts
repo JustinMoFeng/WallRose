@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.shingekinokyojin.wallrose"
-        minSdk = 33
+        minSdk = 31
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -77,4 +77,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("androidx.security:security-crypto:1.0.0")
+    implementation("io.coil-kt:coil-compose:1.3.2")
 }

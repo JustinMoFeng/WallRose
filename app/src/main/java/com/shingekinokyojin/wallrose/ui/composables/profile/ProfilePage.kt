@@ -1,8 +1,11 @@
 package com.shingekinokyojin.wallrose.ui.composables.profile
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,11 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +36,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,10 +45,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
+import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import kotlinx.coroutines.launch
 
@@ -48,57 +59,121 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    userViewModel: UserViewModel,
+    url: String
 ){
 
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    WallRoseTheme {
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        userViewModel.getUserInfo()
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.secondary,
-        modifier = modifier,
-        topBar = {
-            WallRoseTabAppBar(
-                title = stringResource(id = R.string.tabbar_profile),
-                onLeftClick = {
-                    if(drawerState.isOpen) scope.launch { drawerState.close() }
-                    else scope.launch { drawerState.open() }
-                }
+        if(userViewModel.userInfoStatus != "true"&&userViewModel.userInfoStatus != ""){
+            AlertDialog(
+                onDismissRequest = {
+                    navController.navigate(RouteConfig.ROUTE_LOGIN)
+                },
+                title = {
+                    Text(
+                        text = "提示",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                },
+                text = {
+                    Text(
+                        text = "请先登录",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            Log.d("userInfoStatus", userViewModel.userInfoStatus)
+                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .wrapContentHeight()
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onError,
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Text(
+                            text = "确定",
+                            color = MaterialTheme.colorScheme.tertiary,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                },
+                containerColor = Color(0xFF111111),
+                textContentColor = MaterialTheme.colorScheme.tertiary,
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier.border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    shape = RoundedCornerShape(10.dp)
+                )
             )
         }
-    )
-    {
-        ModalNavigationDrawer(
-            drawerContent = {
-                WallRoseDrawer(
+
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            modifier = modifier,
+            topBar = {
+                WallRoseTabAppBar(
+                    title = stringResource(id = R.string.tabbar_profile),
+                    onLeftClick = {
+                        if(drawerState.isOpen) scope.launch { drawerState.close() }
+                        else scope.launch { drawerState.open() }
+                    }
+                )
+            }
+        )
+        {
+            ModalNavigationDrawer(
+                drawerContent = {
+                    WallRoseDrawer(
+                        navController = navController,
+                        modifier = Modifier
+                            .fillMaxWidth(0.648f)
+                            .fillMaxHeight()
+                            .padding(it)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+
+                drawerState = drawerState,
+            ) {
+                ProfileContent(
                     navController = navController,
                     modifier = Modifier
-                        .fillMaxWidth(0.648f)
-                        .fillMaxHeight()
-                        .padding(it)
+                        .padding(it),
+                    userViewModel = userViewModel,
+                    url = url
                 )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+            }
 
-            drawerState = drawerState,
-        ) {
-            ProfileContent(
-                navController = navController,
-                modifier = Modifier
-                    .padding(it),
-            )
         }
-
     }
+
+
 }
 
 
 @Composable
 fun ProfileContent(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    userViewModel: UserViewModel,
+    url: String
 ){
     WallRoseTheme {
         Column(
@@ -108,7 +183,12 @@ fun ProfileContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            ProfileUserPart(modifier = Modifier.weight(1f))
+            ProfileUserPart(
+                modifier = Modifier.weight(1f).padding(top = 5.dp),
+                navController = navController,
+                userName = userViewModel.myNickname,
+                imageUrl = if(userViewModel.myAvatarUrl=="") "" else "$url${userViewModel.myAvatarUrl}"
+            )
 
             Spacer(
                 modifier = Modifier.weight(0.05f)
@@ -155,10 +235,13 @@ fun ProfileContent(
 }
 
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileUserPart(
     modifier: Modifier = Modifier,
-    userName: String = "小仙女",
+    userName: String = "尚未登陆",
+    imageUrl: String = "",
+    navController: NavController
 ){
     WallRoseTheme {
         Row(
@@ -170,16 +253,33 @@ fun ProfileUserPart(
 
             Spacer(modifier = Modifier.weight(0.2f))
 
-            Image(
-                painter = painterResource(id = R.drawable.profile_user_example),
-                contentDescription = "样例用户头像",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .weight(1.8f)
-            )
+            Log.d("imageUrl", imageUrl)
+            if(imageUrl == ""){
+                Image(
+                    painter = painterResource(id = R.drawable.profile_user_example),
+                    contentDescription = "样例用户头像",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .weight(1.8f)
+                )
+            }else {
+                Image(
+                    painter = rememberImagePainter(imageUrl),
+                    contentDescription = "用户头像",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .weight(1.8f),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+
+
+            
+
 
             Text(
-                text = userName,
+                text = if(userName=="") "尚未登陆" else userName,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
@@ -194,6 +294,9 @@ fun ProfileUserPart(
                     .size(20.dp)
                     .clip(CircleShape)
                     .weight(1f)
+                    .clickable {
+                        navController.navigate(RouteConfig.ROUTE_PROFILE_DETAIL)
+                    }
             )
         }
     }
@@ -324,7 +427,10 @@ fun ProfileUserChatHistory(
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewProfileUserPart(){
-    ProfileUserPart()
+    ProfileUserPart(
+        userName = "小仙女",
+        navController = NavController(LocalContext.current)
+    )
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
@@ -353,21 +459,22 @@ fun PreviewProfileUserChatHistory(){
     )
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun PreviewProfileContent(){
-    ProfileContent(
-        navController = NavController(LocalContext.current)
-    )
-}
+//@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+//@Composable
+//fun PreviewProfileContent(){
+//    ProfileContent(
+//        navController = NavController(LocalContext.current)
+//    )
+//}
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun PreviewProfilePage(){
-    ProfilePage(
-        navController = NavController(LocalContext.current),
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    )
-}
+//@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+//@Composable
+//fun PreviewProfilePage(){
+//    ProfilePage(
+//        navController = NavController(LocalContext.current),
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight(),
+//        userViewModel = LazyThreadSafetyMode.NONE
+//    )
+//}

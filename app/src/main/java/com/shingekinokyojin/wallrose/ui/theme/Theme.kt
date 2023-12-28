@@ -22,6 +22,7 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = DarkWordColor,
     // chat聊天框背景色
     background = TransDarkBackgroundColor,
+    onError = ButtonColor
 
 
 )
