@@ -13,6 +13,12 @@ import com.live2d.sdk.cubism.framework.math.CubismViewMatrix;
 import com.live2d.sdk.cubism.framework.rendering.android.CubismOffscreenSurfaceAndroid;
 
 public class LAppMinimumView {
+
+    public enum RenderingTarget {
+        NONE,   // デフォルトのフレームバッファにレンダリング
+        MODEL_FRAME_BUFFER,     // LAppModelForSmallDemoが各自持つフレームバッファにレンダリング
+        VIEW_FRAME_BUFFER  // LAppViewForSmallDemoが持つフレームバッファにレンダリング
+    }
     public LAppMinimumView() {
         clearColor[0] = 1.0f;
         clearColor[1] = 1.0f;
@@ -88,6 +94,78 @@ public class LAppMinimumView {
     }
 
     /**
+     * モデル1体を描画する直前にコールされる
+     *
+     * @param refModel モデルデータ
+     */
+    public void preModelDraw(LAppMinimumModel refModel) {
+        // 別のレンダリングターゲットへ向けて描画する場合の使用するオフスクリーンサーフェス
+        CubismOffscreenSurfaceAndroid useTarget;
+
+        // 別のレンダリングターゲットへ向けて描画する場合
+        if (renderingTarget != RenderingTarget.NONE) {
+
+            // 使用するターゲット
+            useTarget = (renderingTarget == RenderingTarget.VIEW_FRAME_BUFFER)
+                    ? renderingBuffer
+                    : refModel.getRenderingBuffer();
+
+            // 描画ターゲット内部未作成の場合はここで作成
+            if (!useTarget.isValid()) {
+                int width = LAppMinimumDelegate.getInstance().getWindowWidth();
+                int height = LAppMinimumDelegate.getInstance().getWindowHeight();
+
+                // モデル描画キャンバス
+                useTarget.createOffscreenSurface((int) width, (int) height, null);
+            }
+            // レンダリング開始
+            useTarget.beginDraw(null);
+            useTarget.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);   // 背景クリアカラー
+        }
+    }
+
+    /**
+     * モデル1体を描画した直後にコールされる
+     *
+     * @param refModel モデルデータ
+     */
+    public void postModelDraw(LAppMinimumModel refModel) {
+        CubismOffscreenSurfaceAndroid useTarget = null;
+
+        // 別のレンダリングターゲットへ向けて描画する場合
+        if (renderingTarget != RenderingTarget.NONE) {
+            // 使用するターゲット
+            useTarget = (renderingTarget == RenderingTarget.VIEW_FRAME_BUFFER)
+                    ? renderingBuffer
+                    : refModel.getRenderingBuffer();
+
+            // レンダリング終了
+            useTarget.endDraw();
+
+            // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はこことなる
+            if (renderingTarget == RenderingTarget.VIEW_FRAME_BUFFER && renderingSprite != null) {
+                final float[] uvVertex = {
+                        1.0f, 1.0f,
+                        0.0f, 1.0f,
+                        0.0f, 0.0f,
+                        1.0f, 0.0f
+                };
+                renderingSprite.setColor(1.0f, 1.0f, 1.0f, getSpriteAlpha(0));
+                renderingSprite.renderImmediate(useTarget.getColorBuffer()[0], uvVertex);
+            }
+        }
+    }
+
+    /**
+     * レンダリング先を切り替える
+     *
+     * @param targetType レンダリング先
+     */
+    public void switchRenderingTarget(RenderingTarget targetType) {
+        renderingTarget = targetType;
+    }
+
+    /**
      * タッチされたときに呼ばれる
      *
      * @param pointX スクリーンX座標
@@ -156,10 +234,47 @@ public class LAppMinimumView {
         return viewMatrix.invertTransformX(screenY);
     }
 
+    /**
+     * レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
+     *
+     * @param r 赤(0.0~1.0)
+     * @param g 緑(0.0~1.0)
+     * @param b 青(0.0~1.0)
+     */
+    public void setRenderingTargetClearColor(float r, float g, float b) {
+        clearColor[0] = r;
+        clearColor[1] = g;
+        clearColor[2] = b;
+    }
+
+    /**
+     * 別レンダリングターゲットにモデルを描画するサンプルで描画時のαを決定する
+     *
+     * @param assign
+     * @return
+     */
+    public float getSpriteAlpha(int assign) {
+        // assignの数値に応じて適当な差をつける
+        float alpha = 0.25f + (float) assign * 0.5f;
+
+        // サンプルとしてαに適当な差をつける
+        if (alpha > 1.0f) {
+            alpha = 1.0f;
+        }
+        if (alpha < 0.1f) {
+            alpha = 0.1f;
+        }
+        return alpha;
+    }
+
     private final CubismMatrix44 deviceToScreen = CubismMatrix44.create(); // デバイス座標からスクリーン座標に変換するための行列
     private final CubismViewMatrix viewMatrix = new CubismViewMatrix();   // 画面表示の拡縮や移動の変換を行う行列
     private int programId;
 
+    /**
+     * レンダリング先の選択肢
+     */
+    private RenderingTarget renderingTarget = RenderingTarget.NONE;
     /**
      * レンダリングターゲットのクリアカラー
      */

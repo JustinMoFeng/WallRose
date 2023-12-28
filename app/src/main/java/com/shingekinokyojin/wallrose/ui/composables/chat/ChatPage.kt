@@ -79,7 +79,6 @@ import com.shingekinokyojin.wallrose.live2d.LAppMinimumDelegate
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDrawer
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseTabAppBar
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
-import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
 import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch

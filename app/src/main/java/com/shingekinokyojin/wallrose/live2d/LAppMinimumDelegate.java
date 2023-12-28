@@ -50,7 +50,7 @@ public class LAppMinimumDelegate {
     }
 
     public void onPause() {
-        currentModel = LAppMinimumLive2DManager.getInstance().getCurrentModel();
+//        currentModel = LAppMinimumLive2DManager.getInstance().getCurrentModel();
     }
 
     public void onDestroy() {

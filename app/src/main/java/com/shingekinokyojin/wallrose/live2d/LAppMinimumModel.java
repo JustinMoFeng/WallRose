@@ -61,6 +61,12 @@ public class LAppMinimumModel extends CubismUserModel {
         setupRenderer(renderer);
 
         setupTextures();
+
+        // Special process for Amadeus
+        if (dir.contains("Amadeus")) {
+            CubismId index = new CubismId("Part10");
+            model.setPartOpacity(index, 0f);
+        }
     }
 
     /**
@@ -88,15 +94,18 @@ public class LAppMinimumModel extends CubismUserModel {
         model.loadParameters();
 
         // モーションの再生がない場合、待機モーションの中からランダムで再生する
-//        if (motionManager.isFinished()) {
-//            startMotion(LAppDefine.MotionGroup.IDLE.getId(), 0, LAppDefine.Priority.IDLE.getPriority());
-//        } else {
-//            // モーションを更新
-//            isMotionUpdated = motionManager.updateMotion(model, deltaTimeSeconds);
-//        }
-        if (expressionManager.isFinished()) {
-            Log.d("LAppMinimumModel", expressions.toString());
-            expressionManager.startMotionPriority(expressions.get("fix"), LAppDefine.Priority.IDLE.getPriority());
+        if (!modelHomeDirectory.contains("Amadeus")) {
+            if (motionManager.isFinished()) {
+                startMotion(LAppDefine.MotionGroup.IDLE.getId(), 0, LAppDefine.Priority.IDLE.getPriority());
+            } else {
+                // モーションを更新
+                isMotionUpdated = motionManager.updateMotion(model, deltaTimeSeconds);
+            }
+        } else {
+            if (expressionManager.isFinished()) {
+                Log.d("LAppMinimumModel", expressions.toString());
+                expressionManager.startMotionPriority(expressions.get("fix"), LAppDefine.Priority.IDLE.getPriority());
+            }
         }
 
 
