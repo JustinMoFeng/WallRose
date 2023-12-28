@@ -23,6 +23,14 @@ class UserViewModel(
     var myAvatarUrl by mutableStateOf("")
     var userInfoStatus by mutableStateOf("")
 
+    var reviseUserInfo by mutableStateOf("")
+
+
+    var reviseNickname by mutableStateOf("")
+    var oldPassword by mutableStateOf("")
+    var newPassword by mutableStateOf("")
+    var newPasswordAgain by mutableStateOf("")
+
     fun getUserInfo() {
         viewModelScope.launch {
             val stringArr = userRepository.getMeInfo()

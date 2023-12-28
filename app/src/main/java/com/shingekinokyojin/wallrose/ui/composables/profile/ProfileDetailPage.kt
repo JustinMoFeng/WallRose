@@ -3,6 +3,7 @@ package com.shingekinokyojin.wallrose.ui.composables.profile
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -161,14 +162,22 @@ fun ProfileDetailBody(
             )
             ProfileDetailItem(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        userViewModel.reviseUserInfo = "昵称"
+                        navController.navigate(RouteConfig.ROUTE_PROFILE_MODIFICATION)
+                    },
                 label = "昵称",
                 content = userViewModel.myNickname
             )
             Spacer(modifier = Modifier.height(15.dp))
             ProfileDetailItem(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        userViewModel.reviseUserInfo = "安全"
+                        navController.navigate(RouteConfig.ROUTE_PROFILE_MODIFICATION)
+                    },
                 label = "安全",
                 content = "",
                 isSecurity = true

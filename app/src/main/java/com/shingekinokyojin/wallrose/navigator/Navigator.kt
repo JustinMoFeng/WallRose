@@ -12,6 +12,7 @@ import com.shingekinokyojin.wallrose.ui.composables.authenticate.LoginPage
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.RegisterPage
 import com.shingekinokyojin.wallrose.ui.composables.chat.ChatPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileDetailPage
+import com.shingekinokyojin.wallrose.ui.composables.profile.ProfileModificationPage
 import com.shingekinokyojin.wallrose.ui.composables.profile.ProfilePage
 import com.shingekinokyojin.wallrose.ui.screens.AuthenticateViewModel
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
@@ -67,5 +68,14 @@ fun WallRoseNavHost(
                 userViewModel = userViewModel
             )
         }
+
+        composable(RouteConfig.ROUTE_PROFILE_MODIFICATION){
+            ProfileModificationPage(
+                navController = navController,
+                userViewModel = userViewModel
+            )
+        }
+
+
     }
 }

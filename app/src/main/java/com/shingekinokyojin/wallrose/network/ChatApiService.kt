@@ -12,7 +12,7 @@ class ChatApiService(
     private val url: String,
     private val okHttpClient: OkHttpClient
 ) {
-    fun sendMessage(message: String) : Flow<ChatEvent> {
+    fun getGreeting(message: String) : Flow<ChatEvent> {
         return flow {
             val request = Request.Builder()
                 .url("$url/greeting_stream?message=${message}")
@@ -48,4 +48,5 @@ class ChatApiService(
             }
         }
     }
+
 }

@@ -33,8 +33,7 @@ class ChatViewModel(
         _messages.value = emptyList()
     }
 
-    fun sendMessage() {
-
+    fun getGreeting() {
         if (responding) {
             return
         }
@@ -43,7 +42,7 @@ class ChatViewModel(
         currentMessage = "..."
         Log.d("ChatViewModel", "Sending $inputMessage")
         viewModelScope.launch(Dispatchers.IO) {
-            chatsRepository.sendMessage(inputMessage).collect() { chatEvent ->
+            chatsRepository.getGreeting(inputMessage).collect() { chatEvent ->
                 if(chatEvent.event == "error") {
                     chatStatus = "error"
                     currentMessage = chatEvent.data

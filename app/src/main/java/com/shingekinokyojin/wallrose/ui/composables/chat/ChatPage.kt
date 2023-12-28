@@ -87,6 +87,7 @@ fun ChatPage(
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    if(chatViewModel.currentMessage=="")chatViewModel.getGreeting()
 
     Scaffold(
         modifier = modifier,
@@ -131,7 +132,7 @@ fun ChatPage(
                     if(SharedPreferencesManager.getToken()==""){
                         navController.navigate(RouteConfig.ROUTE_LOGIN)
                     }else{
-                        chatViewModel.sendMessage()
+                        Log.d("ChatPage", "sendAction")
                     }
                 }
             )
@@ -335,6 +336,7 @@ fun ChatMyMessage(
     myUserName: String
 ){
     WallRoseTheme{
+
         Row(
             modifier = modifier
                 .fillMaxWidth()
