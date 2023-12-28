@@ -58,7 +58,7 @@ data class ToolMessage(
 
 @Serializable
 data class Chat(
-    val _id: List<Any> = null,
+    val _id: String?,
     val owner: String,
     val name: String? = null,
     val messages: List<Message>
