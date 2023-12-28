@@ -47,8 +47,14 @@ class UserViewModel(
         viewModelScope.launch {
             chatHistory = listOf()
             val string = userRepository.getChatHistory()
+            if(chosenChatHistory == null && string.isNotEmpty()){
+                chosenChatHistory = string[0]
+            }
             Log.d("UserViewModel", "getChatHistory: $string")
             for (chat in string) {
+                if(chat._id == chosenChatHistory?._id){
+                    chosenChatHistory = chat
+                }
                 val messages = chat.messages
                 if(messages.size>=2){
                     val secondMessage = messages[1]
@@ -59,9 +65,7 @@ class UserViewModel(
                     }
                 }
             }
-            if(chosenChatHistory == null && chatHistory.isNotEmpty()){
-                chosenChatHistory = chatHistory[0]
-            }
+
         }
     }
 
