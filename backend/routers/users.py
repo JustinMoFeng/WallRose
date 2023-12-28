@@ -17,13 +17,39 @@ async def upload_image(file: UploadFile = File(...), collection=Depends(get_user
     res = await collection.update_one({"username":user.username},{"$set":{"avatar":image_data}})
     return {"message":"上传成功"}
 
-@router.get("/avatar/{user_id}", response_class=StreamingResponse)
-async def get_avatar(user_id: str, collection=Depends(get_user_collection)):
+@router.get("/avatar", response_class=StreamingResponse)
+async def get_avatar(user=Depends(get_current_user)):
     """
     根据用户 id 返回用户头像
     """
-    user = await collection.find_one({"_id":ObjectId(user_id)})
     if user and user.get("avatar"):
         return StreamingResponse(BytesIO(user["avatar"]), media_type="image/png")
     else:
         raise HTTPException(status_code=404, detail="User avatar not found")
+    
+@router.put("/password")
+async def change_password(old_password: str, new_password: str, collection=Depends(get_user_collection), user=Depends(get_current_user)):
+    """
+    修改密码
+    """
+    if user:
+        if user["password"] == old_password:
+            await collection.update_one({"username":user["username"]},{"$set":{"password":new_password}})
+            return {"message":"Change password success"}
+        else:
+            raise HTTPException(status_code=400, detail="Old password is wrong")
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    
+@router.put("/nickname")
+async def change_nickname(nickname: str, collection=Depends(get_user_collection), user=Depends(get_current_user)):
+    """
+    修改昵称
+    """
+    if user:
+        await collection.update_one({"username":user["username"]},{"$set":{"nickname":nickname}})
+        return {"message":"Change nickname success"}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+    
