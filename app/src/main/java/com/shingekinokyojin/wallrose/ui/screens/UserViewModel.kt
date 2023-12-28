@@ -4,6 +4,7 @@ package com.shingekinokyojin.wallrose.ui.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,6 +16,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.shingekinokyojin.wallrose.WallRoseApplication
 import com.shingekinokyojin.wallrose.data.UserRepository
+import com.shingekinokyojin.wallrose.model.AssistantMessage
+import com.shingekinokyojin.wallrose.model.Chat
+import com.shingekinokyojin.wallrose.model.UserMessage
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -35,6 +39,28 @@ class UserViewModel(
     var oldPassword by mutableStateOf("")
     var newPassword by mutableStateOf("")
     var newPasswordAgain by mutableStateOf("")
+
+    var chatHistory: List<String> by mutableStateOf(listOf())
+    var chosenChatHistory: Chat? by mutableStateOf(null)
+
+    fun getChatHistory() {
+        viewModelScope.launch {
+            val string = userRepository.getChatHistory()
+            Log.d("UserViewModel", "getChatHistory: $string")
+            for (chat in string) {
+                val messages = chat.messages
+                if(messages.size>=2){
+                    val secondMessage = messages[1]
+                    if(secondMessage is UserMessage){
+                        chatHistory = chatHistory + secondMessage.content
+                    }else if(secondMessage is AssistantMessage){
+                        chatHistory = chatHistory + secondMessage.content.toString()
+                    }
+                }
+            }
+
+        }
+    }
 
     fun getUserInfo() {
         viewModelScope.launch {

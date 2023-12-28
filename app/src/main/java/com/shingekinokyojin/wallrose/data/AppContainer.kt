@@ -13,6 +13,10 @@ interface AppContainer {
 }
 
 class DefaultAppContainer : AppContainer {
+
+    companion object{
+        val url = "http://192.168.31.140:8000"
+    }
     override val baseUrl: String
         get() = "http://192.168.31.140:8000"
 

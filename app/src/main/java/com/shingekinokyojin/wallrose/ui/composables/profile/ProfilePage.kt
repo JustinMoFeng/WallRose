@@ -68,6 +68,7 @@ fun ProfilePage(
         val drawerState = rememberDrawerState(DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         userViewModel.getUserInfo()
+        userViewModel.getChatHistory()
 
         if(userViewModel.userInfoState != "true"&&userViewModel.userInfoState != ""){
             AlertDialog(
@@ -195,16 +196,7 @@ fun ProfileContent(
             )
 
             ProfileUserChatHistory(
-                contentList = listOf(
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？",
-                    "解析植物奶：为什么突然流行？有哪些种类？解析植物奶：为什么突然流行？有哪些种类？"
-                ),
+                contentList = userViewModel.chatHistory,
                 modifier = Modifier
                     .weight(5f)
                     .padding(horizontal = 20.dp)

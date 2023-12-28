@@ -1,5 +1,6 @@
 package com.shingekinokyojin.wallrose.data
 
+import com.shingekinokyojin.wallrose.model.Chat
 import com.shingekinokyojin.wallrose.network.AuthenticateApiService
 import com.shingekinokyojin.wallrose.network.UserApiService
 import java.io.File
@@ -11,6 +12,7 @@ interface UserRepository {
     suspend fun uploadImage(file: File): String
     suspend fun reviseNickname(nickname: String):String
     suspend fun revisePassword(oldPassword: String, newPassword: String):String
+    suspend fun getChatHistory(): List<Chat>
 }
 
 class NetworkUserRepository(
@@ -39,5 +41,9 @@ class NetworkUserRepository(
 
     override suspend fun revisePassword(oldPassword: String, newPassword: String):String {
         return userApiService.revisePassword(oldPassword, newPassword)
+    }
+
+    override suspend fun getChatHistory(): List<Chat> {
+        return userApiService.getChatHistory()
     }
 }

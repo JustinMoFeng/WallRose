@@ -79,4 +79,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("io.coil-kt:coil-compose:1.3.2")
+    implementation(fileTree(mapOf("dir" to "../libs", "include" to listOf("QWeather_Public_Android_V4.17.jar"))))
+    implementation("com.google.code.gson:gson:2.10")
 }

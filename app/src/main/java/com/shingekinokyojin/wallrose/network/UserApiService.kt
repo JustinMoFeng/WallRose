@@ -2,6 +2,7 @@ package com.shingekinokyojin.wallrose.network
 
 import android.util.Log
 import com.shingekinokyojin.wallrose.model.AuthenticateErrorResult
+import com.shingekinokyojin.wallrose.model.Chat
 import com.shingekinokyojin.wallrose.model.ImageUploadResult
 import com.shingekinokyojin.wallrose.model.UserInfoResult
 import kotlinx.coroutines.Dispatchers
@@ -126,6 +127,30 @@ class UserApiService(
         }catch (e: Exception){
             Log.e("UserApiService", "Error: ${e.message}")
             e.message!!
+        }
+    }
+
+    suspend fun getChatHistory(): List<Chat> = withContext(Dispatchers.IO) {
+        val request = okhttp3.Request.Builder()
+            .url("$url/chats/list?page=1&size=20")
+            .get()
+            .build()
+
+        try {
+            okHttpClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    val errorResponse = Json.decodeFromString<AuthenticateErrorResult>(response.body!!.string())
+                    Log.e("UserApiService", "Error: ${errorResponse.detail}")
+                    listOf()
+                }else {
+                    val responseBody = Json.decodeFromString<List<Chat>>(response.body!!.string())
+                    Log.d("UserApiService", "Success: $responseBody")
+                    responseBody
+                }
+            }
+        }catch (e: Exception){
+            Log.e("UserApiService", "Error: ${e.message}")
+            listOf()
         }
     }
 }

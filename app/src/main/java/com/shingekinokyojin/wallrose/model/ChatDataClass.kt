@@ -1,8 +1,6 @@
 package com.shingekinokyojin.wallrose.model
 
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.JsonNames
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -59,8 +57,8 @@ data class ToolMessage(
 ) : Message()
 
 @Serializable
-data class Chat (
-    val _id: String? = null,
+data class Chat(
+    val _id: List<Any> = null,
     val owner: String,
     val name: String? = null,
     val messages: List<Message>

@@ -1,14 +1,18 @@
 package com.shingekinokyojin.wallrose.ui.screens
 
-import android.app.AlarmManager
-import android.app.Application
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.LocationManager
 import android.provider.AlarmClock
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,16 +21,26 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.qweather.sdk.bean.base.Lang
+import com.qweather.sdk.bean.base.Unit
+import com.qweather.sdk.bean.geo.GeoBean
+import com.qweather.sdk.bean.geo.GeoBean.LocationBean
+import com.qweather.sdk.view.QWeather
 import com.shingekinokyojin.wallrose.WallRoseApplication
 import com.shingekinokyojin.wallrose.data.ChatsRepository
 import com.shingekinokyojin.wallrose.model.AlarmArgument
-import com.shingekinokyojin.wallrose.model.Chat
-import com.shingekinokyojin.wallrose.model.ChatEvent
-import com.shingekinokyojin.wallrose.model.Function
 import com.shingekinokyojin.wallrose.model.ToolCall
+import com.shingekinokyojin.wallrose.model.WeatherArgument
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
+import java.time.LocalDate
+import java.time.Period
+import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
 
 class ChatViewModel(
     private val chatsRepository: ChatsRepository,
@@ -41,7 +55,21 @@ class ChatViewModel(
     var inputMessage by mutableStateOf("")
     var chatStatus by mutableStateOf("")
 
+    var loginStatus by mutableStateOf(true)
+
     var currentChatId by mutableStateOf("")
+    var haveLocation by mutableStateOf(false)
+    var gettingLocation by mutableStateOf(false)
+
+
+    init {
+        viewModelScope.launch{
+            haveLocation = ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
 
     fun sendMessage(message:String){
 
@@ -56,13 +84,20 @@ class ChatViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             if(currentChatId == ""){
                 currentChatId = chatsRepository.createChat().toString()
+                if(currentChatId == ""){
+                    loginStatus = false
+                    currentMessage = "创建聊天失败"
+                    return@launch
+                }
                 Log.d("ChatViewModel", "Created chat $currentChatId")
             }
             chatsRepository.sendMessage(message,currentChatId).collect() { chatEvent ->
                 when(chatEvent.event){
                     "error" -> {
+                        Log.e("ChatViewModel", "Received $chatEvent")
                         chatStatus = "error"
                         currentMessage = chatEvent.data
+                        loginStatus = false
                         return@collect
                     }
                     "message" -> {
@@ -77,6 +112,8 @@ class ChatViewModel(
                         toolFlag = true
                         var returnStr = when(toolObj.function.name){
                             "set_alarm" -> setAlarmClock(toolObj.function.arguments)
+                            "get_weather" -> getCurrentWeather(toolObj.function.arguments)
+
                             else -> "unknown function"
                         }
 
@@ -121,6 +158,96 @@ class ChatViewModel(
         }catch (e: Exception){
             Log.e("ChatViewModel", "Error: $e")
             return "fail"
+        }
+    }
+
+    suspend fun getCurrentWeather(arguments: String): String{
+        try {
+            if (!haveLocation) {
+                gettingLocation = true
+                return "失败，没有获得地理位置权限"
+            }
+
+            val weatherArg = Json.decodeFromString<WeatherArgument>(arguments)
+            Log.d("ChatViewModel", "Received $weatherArg")
+                if (weatherArg.location == "current") {
+                    weatherArg.location = "上海"
+                }
+                val city = updateLocationCityId(context,weatherArg.location)
+                val weatherArgDate = LocalDate.parse(weatherArg.date)
+                // 东八区时间
+                val currentDate = LocalDate.now()
+                val period = Period.between(currentDate, weatherArgDate)
+                val daysDifference = period.days
+                Log.d("ChatViewModel", daysDifference.toString())
+
+                if (daysDifference == 0) {
+                    return suspendCancellableCoroutine<String> { continuation ->
+                        QWeather.getWeatherNow(
+                            context,
+                            city.id,
+                            Lang.ZH_HANS,
+                            Unit.METRIC,
+                            object : QWeather.OnResultWeatherNowListener {
+                                override fun onError(e: Throwable?) {
+                                    Log.e("ChatViewModel", "Error: $e")
+                                    continuation.resumeWithException(e ?: Exception("Unknown error"))
+                                }
+
+                                override fun onSuccess(p0: com.qweather.sdk.bean.weather.WeatherNowBean?) {
+                                    Log.d("ChatViewModel", "Success: $p0")
+                                    val weatherText = p0?.now?.text.toString()
+                                    val temperature = p0?.now?.temp.toString()
+                                    continuation.resume("当前的天气是$weatherText，温度是$temperature")
+                                }
+                            }
+                        )
+                    }
+                } else {
+                    return "Weather information is not available for future dates"
+                }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error: $e")
+            return "fail"
+        }
+        return "fail"
+    }
+
+
+    suspend fun updateLocationCityId(context: Context,city:String): LocationBean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val provider = LocationManager.GPS_PROVIDER
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            haveLocation = false
+            return LocationBean()
+        }
+
+        Log.d("ChatViewModel", locationManager.getLastKnownLocation(provider).toString())
+
+
+        return suspendCancellableCoroutine { continuation ->
+            QWeather.getGeoCityLookup(
+                context,
+                city,
+                Lang.ZH_HANS,
+                object : QWeather.OnResultGeoListener {
+                    override fun onError(e: Throwable?) {
+                        Log.e("ChatViewModel", "Error: $e")
+                        continuation.resumeWithException(e ?: Exception("Unknown error"))
+                    }
+
+                    override fun onSuccess(geoBean: GeoBean?) {
+                        Log.d("ChatViewModel", "Success: $geoBean")
+                        val city = geoBean?.locationBean?.get(0) ?: LocationBean()
+                        continuation.resume(city as LocationBean)
+                    }
+                }
+            )
         }
     }
 

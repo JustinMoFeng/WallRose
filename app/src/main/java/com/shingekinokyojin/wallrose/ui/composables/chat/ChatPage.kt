@@ -1,7 +1,11 @@
 package com.shingekinokyojin.wallrose.ui.composables.chat
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.net.Uri
 import android.opengl.GLSurfaceView
+import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.Image
@@ -38,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -83,12 +88,11 @@ import kotlinx.coroutines.launch
 fun ChatPage(
     modifier: Modifier = Modifier,
     chatViewModel: ChatViewModel,
-    navController: NavController,
+    navController: NavController
 ){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     if(chatViewModel.currentMessage=="")chatViewModel.getGreeting()
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -121,6 +125,7 @@ fun ChatPage(
             gesturesEnabled = false,
             drawerState = drawerState,
         ) {
+
             ChatBody(
                 modifier = Modifier
                     .fillMaxSize()
@@ -137,6 +142,15 @@ fun ChatPage(
                     }
                 }
             )
+            if(!chatViewModel.haveLocation&&chatViewModel.gettingLocation){
+
+                LaunchedEffect(key1 = true) {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${MainActivity.instance?.packageName}"))
+                    MainActivity.instance?.startActivity(intent)
+                    chatViewModel.haveLocation = true
+                    chatViewModel.gettingLocation = false
+                }
+            }
         }
 
         if(chatViewModel.chatStatus == "error") {
@@ -154,6 +168,30 @@ fun ChatPage(
                     Button(
                         onClick = {
                             chatViewModel.chatStatus = ""
+                            navController.navigate(RouteConfig.ROUTE_LOGIN)
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
+                }
+            )
+        }
+
+        if(!chatViewModel.loginStatus){
+            AlertDialog(
+                onDismissRequest = {
+                    chatViewModel.loginStatus = true
+                },
+                title = {
+                    Text(text = "提示")
+                },
+                text = {
+                    Text(text = "尚未登陆")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            chatViewModel.loginStatus = true
                             navController.navigate(RouteConfig.ROUTE_LOGIN)
                         }
                     ) {

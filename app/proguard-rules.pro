@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# If you don't want proguard to process your library project jars,
+ -dontwarn com.squareup.**
+ -dontwarn okio.**
+ -keep public class org.codehaus.* { *; }
+ -keep public class java.nio.* { *; }
+
+#  排除QWeather
+ -dontwarn com.qweather.sdk.**
+ -keep class com.qweather.sdk.** { *;}

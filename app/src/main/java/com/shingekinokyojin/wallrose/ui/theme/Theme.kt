@@ -28,9 +28,13 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = LightNavColor,
+    secondary = LightBackgroundColor,
+    onSecondary = OnLightNavColor,
+    tertiary = LightWordColor,
+    // chat聊天框背景色
+    background = TransLightBackgroundColor,
+    onError = ButtonColor
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

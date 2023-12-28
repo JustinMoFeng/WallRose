@@ -7,3 +7,9 @@ data class AlarmArgument(
     val date: String,
     val time: String
 )
+
+@Serializable
+data class WeatherArgument(
+    var location: String,
+    val date: String
+)
