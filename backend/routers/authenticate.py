@@ -31,7 +31,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="用户名或密码错误",
             headers={"WWW-Authenticate": "Bearer"},
         )
     token_dict = {"username":user.username,"user_id":str(user.user_id)}

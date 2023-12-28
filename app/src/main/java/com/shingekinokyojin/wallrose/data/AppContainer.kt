@@ -9,10 +9,12 @@ import okhttp3.OkHttpClient
 interface AppContainer {
     val chatsRepository: ChatsRepository
     val userRepository: UserRepository
+    val baseUrl: String
 }
 
 class DefaultAppContainer : AppContainer {
-    private val baseUrl = "http://192.168.31.140:8000"
+    override val baseUrl: String
+        get() = "http://10.0.2.2:8000"
 
     /**
      * okhttp client for creating api calls

@@ -1,5 +1,6 @@
 package com.shingekinokyojin.wallrose.ui.screens
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -26,12 +27,11 @@ class UserViewModel(
     var myUsername by mutableStateOf("")
     var myNickname by mutableStateOf("")
     var myAvatarUrl by mutableStateOf("")
-    var userInfoStatus by mutableStateOf("")
+    var userInfoState by mutableStateOf("")
 
+    var reviseUserInfoState by mutableStateOf("")
     var reviseUserInfo by mutableStateOf("")
-
-
-    var reviseNickname by mutableStateOf("")
+    var newNickname by mutableStateOf("")
     var oldPassword by mutableStateOf("")
     var newPassword by mutableStateOf("")
     var newPasswordAgain by mutableStateOf("")
@@ -39,7 +39,7 @@ class UserViewModel(
     fun getUserInfo() {
         viewModelScope.launch {
             val stringArr = userRepository.getMeInfo()
-            userInfoStatus = stringArr[0]
+            userInfoState = stringArr[0]
             if(stringArr[0] == "true") {
                 myUsername = stringArr[1]
                 myNickname = stringArr[2]
@@ -47,7 +47,7 @@ class UserViewModel(
             }
         }
     }
-
+    
     fun uploadImage(context:Context, imageURL: Uri){
         viewModelScope.launch {
             val file = uriToFile(context, imageURL)
@@ -70,7 +70,27 @@ class UserViewModel(
         }
         return null
     }
+    
+    fun reviseNickname() {
+        viewModelScope.launch {
+            val string = userRepository.reviseNickname(newNickname)
+            reviseUserInfoState = string
+            if(string=="true") {
+                myNickname = newNickname
+            }
+        }
+    }
 
+    fun revisePassword() {
+        if (newPassword != newPasswordAgain) {
+            reviseUserInfoState = "两次输入的密码不一致"
+            return
+        }
+        viewModelScope.launch {
+            val string = userRepository.revisePassword(oldPassword, newPassword)
+            reviseUserInfoState = string
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

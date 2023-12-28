@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.shingekinokyojin.wallrose.WallRoseApplication
 import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.LoginPage
 import com.shingekinokyojin.wallrose.ui.composables.authenticate.RegisterPage
@@ -24,9 +25,7 @@ fun WallRoseNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = RouteConfig.ROUTE_CHAT,
 ){
-
-
-    val url = "http://192.168.31.140:8000"
+    val url = WallRoseApplication.instance.container.baseUrl
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
     val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
     val userViewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)

@@ -268,7 +268,7 @@ fun ProfileDetailItem(
                         .clip(RoundedCornerShape(10.dp)),
                     contentScale = ContentScale.Crop
                 )
-            } else if (imageValue == ""&&!isSecurity){
+            } else if (!isSecurity){
                 Image(
                     painter = painterResource(id = R.drawable.profile_user_example),
                     contentDescription = "right arrow",
