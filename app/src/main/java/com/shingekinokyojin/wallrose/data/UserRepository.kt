@@ -3,12 +3,14 @@ package com.shingekinokyojin.wallrose.data
 import com.shingekinokyojin.wallrose.network.AuthenticateApiService
 import com.shingekinokyojin.wallrose.network.UserApiService
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
+import java.io.File
 
 interface UserRepository {
     suspend fun register(username: String, password: String, nickname: String):String
     suspend fun login(username: String, password: String):String
 
     suspend fun getMeInfo():Array<String>
+    suspend fun uploadImage(file: File): String
 }
 
 class NetworkUserRepository(
@@ -25,5 +27,9 @@ class NetworkUserRepository(
 
     override suspend fun getMeInfo():Array<String> {
         return userApiService.getMeInfo()
+    }
+
+    override suspend fun uploadImage(file: File): String {
+        return userApiService.uploadImage(file)
     }
 }

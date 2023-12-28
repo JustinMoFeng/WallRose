@@ -22,9 +22,11 @@ import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 fun WallRoseNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = RouteConfig.ROUTE_CHAT
+    startDestination: String = RouteConfig.ROUTE_CHAT,
 ){
 
+
+    val url = "http://192.168.31.140:8000"
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
     val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
     val userViewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
@@ -44,7 +46,8 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_PROFILE){
             ProfilePage(
                 navController = navController,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                url = url
             )
         }
 
@@ -65,7 +68,8 @@ fun WallRoseNavHost(
         composable(RouteConfig.ROUTE_PROFILE_DETAIL){
             ProfileDetailPage(
                 navController = navController,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                url = url
             )
         }
 

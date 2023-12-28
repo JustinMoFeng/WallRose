@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,7 +60,8 @@ import kotlinx.coroutines.launch
 fun ProfilePage(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    url: String
 ){
 
     WallRoseTheme {
@@ -154,7 +156,8 @@ fun ProfilePage(
                     navController = navController,
                     modifier = Modifier
                         .padding(it),
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    url = url
                 )
             }
 
@@ -169,7 +172,8 @@ fun ProfilePage(
 fun ProfileContent(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    url: String
 ){
     WallRoseTheme {
         Column(
@@ -180,10 +184,10 @@ fun ProfileContent(
         ) {
 
             ProfileUserPart(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(top = 5.dp),
                 navController = navController,
                 userName = userViewModel.myNickname,
-                imageUrl = userViewModel.myAvatarUrl
+                imageUrl = if(userViewModel.myAvatarUrl=="") "" else "$url${userViewModel.myAvatarUrl}"
             )
 
             Spacer(
@@ -264,7 +268,8 @@ fun ProfileUserPart(
                     contentDescription = "用户头像",
                     modifier = Modifier
                         .clip(CircleShape)
-                        .weight(1.8f)
+                        .weight(1.8f),
+                    contentScale = ContentScale.Crop
                 )
             }
 

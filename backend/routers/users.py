@@ -15,7 +15,7 @@ async def upload_image(file: UploadFile = File(...), collection=Depends(get_user
     image_data = await file.read()
     # 更新用户头像
     res = await collection.update_one({"username":user.username},{"$set":{"avatar":image_data}})
-    return {"message":"Upload Success"}
+    return {"message":"上传成功"}
 
 @router.get("/avatar/{user_id}", response_class=StreamingResponse)
 async def get_avatar(user_id: str, collection=Depends(get_user_collection)):

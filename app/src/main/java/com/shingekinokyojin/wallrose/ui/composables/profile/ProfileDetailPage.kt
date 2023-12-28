@@ -1,6 +1,10 @@
 package com.shingekinokyojin.wallrose.ui.composables.profile
 
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,7 +54,8 @@ import com.shingekinokyojin.wallrose.utils.SharedPreferencesManager
 fun ProfileDetailPage(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    url:String
 ) {
     WallRoseTheme {
         Scaffold(
@@ -80,7 +86,8 @@ fun ProfileDetailPage(
                         .fillMaxWidth()
                         .padding(it),
                     navController = navController,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    url = url
                 )
             }
         }
@@ -93,10 +100,17 @@ fun ProfileDetailPage(
 fun ProfileDetailBody(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    url:String
 ) {
     WallRoseTheme {
+        val context = LocalContext.current
         var showDialog by remember { mutableStateOf(false) }
+        val selectImageLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            uri?.let { userViewModel.uploadImage(context, it) }
+        }
 
         if (showDialog) {
             AlertDialog(
@@ -148,9 +162,12 @@ fun ProfileDetailBody(
         ) {
             ProfileDetailItem(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        selectImageLauncher.launch("image/*")
+                    },
                 label = "头像",
-                imageValue = userViewModel.myAvatarUrl
+                imageValue = if(userViewModel.myAvatarUrl=="") "" else "$url${userViewModel.myAvatarUrl}"
             )
             Spacer(modifier = Modifier.height(15.dp))
             ProfileDetailItem(
@@ -248,7 +265,8 @@ fun ProfileDetailItem(
                     contentDescription = "right arrow",
                     modifier = Modifier
                         .size(55.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.Crop
                 )
             } else if (imageValue == ""&&!isSecurity){
                 Image(
