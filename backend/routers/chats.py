@@ -120,7 +120,7 @@ async def send_message(
     # 若 content 不为空，是用户发送的消息，为空说明是返回工具调用后继续请求 GPT 的回答
     if content:
         chat.messages.append(UserMessage(content=content))
-        collection.update_one({"_id": ObjectId(chat_id)},{"$set":chat.model_dump(by_alias=True)})
+        collection.update_one({"_id": ObjectId(chat_id)},{"$set":chat.model_dump(exclude={"id"})})
 
     stream = await gpt_api_stream(chat.messages)
 
@@ -170,17 +170,17 @@ async def send_message(
 
         chat.messages.append(assistant_message)
 
-        for tool_call in tool_calls:
-            print(f"Fake Calling {tool_call}")
-            chat.messages.append(
-                ToolMessage(
-                    tool_call_id=tool_call["id"],
-                    name=tool_call["function"]["name"],
-                    content="Success",
-                )
-            )
+        # for tool_call in tool_calls:
+        #     print(f"Fake Calling {tool_call}")
+        #     chat.messages.append(
+        #         ToolMessage(
+        #             tool_call_id=tool_call["id"],
+        #             name=tool_call["function"]["name"],
+        #             content="Success",
+        #         )
+        #     )
 
-        collection.update_one({"_id": ObjectId(chat_id)},{"$set": chat.model_dump(by_alias=True)})
+        collection.update_one({"_id": ObjectId(chat_id)},{"$set": chat.model_dump(exclude={"id"})})
 
         for tool_call in tool_calls:
             yield {"event": "tool_call", "data": json.dumps(tool_call)}
@@ -208,6 +208,6 @@ async def call_tool_return(
 
     # 将消息存入数据库
     chat.messages.append(ToolMessage(tool_call_id=tool_call_id, name=tool_name, content=content))
-    collection.update_one({"_id": ObjectId(chat_id)},{"$set":chat.model_dump(by_alias=True)})
+    collection.update_one({"_id": ObjectId(chat_id)},{"$set":chat.model_dump(exclude={"id"})})
 
     return {"message":"Return Success"}

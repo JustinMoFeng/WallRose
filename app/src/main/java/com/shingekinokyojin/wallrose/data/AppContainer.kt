@@ -14,7 +14,7 @@ interface AppContainer {
 
 class DefaultAppContainer : AppContainer {
     override val baseUrl: String
-        get() = "http://10.0.2.2:8000"
+        get() = "http://192.168.31.140:8000"
 
     /**
      * okhttp client for creating api calls

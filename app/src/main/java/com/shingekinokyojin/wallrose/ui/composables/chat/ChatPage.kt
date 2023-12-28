@@ -133,6 +133,7 @@ fun ChatPage(
                         navController.navigate(RouteConfig.ROUTE_LOGIN)
                     }else{
                         Log.d("ChatPage", "sendAction")
+                        chatViewModel.sendMessage(chatViewModel.inputMessage)
                     }
                 }
             )
