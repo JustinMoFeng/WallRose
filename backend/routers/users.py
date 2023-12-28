@@ -3,9 +3,8 @@ from fastapi import APIRouter, File, UploadFile, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from bson import ObjectId
 from database import get_user_collection
-from dependencies.auth_dependencies import get_current_user
+from dependencies.auth_dependencies import hash_password, authenticate_user, get_current_user
 from pydantic import BaseModel
-from dependencies.auth_dependencies import authenticate_user
 
 router = APIRouter()
 
@@ -26,7 +25,7 @@ async def get_avatar(user_id: str, collection=Depends(get_user_collection)):
     """
     user = await collection.find_one({"_id":ObjectId(user_id)})
     if user and user.get("avatar"):
-        return StreamingResponse(BytesIO(user.avatar), media_type="image/png")
+        return StreamingResponse(BytesIO(user["avatar"]), media_type="image/png")
     else:
         raise HTTPException(status_code=404, detail="User avatar not found")
 
@@ -48,7 +47,8 @@ async def change_password(password: Password, collection=Depends(get_user_collec
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:
-        await collection.update_one({"username":user.username},{"$set":{"password":password.new_password}})
+        hashed_password = hash_password(password.new_password)
+        await collection.update_one({"username":user.username},{"$set":{"hashed_password":hashed_password}})
         return {"message":"Change password success"}
     except:
         raise HTTPException(status_code=500, detail="Change password failed")

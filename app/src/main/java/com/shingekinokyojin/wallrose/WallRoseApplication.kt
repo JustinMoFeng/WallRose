@@ -9,9 +9,14 @@ class WallRoseApplication : Application() {
 
     lateinit var container: AppContainer
 
+    companion object {
+        lateinit var instance: WallRoseApplication
+    }
+
     override fun onCreate() {
         super.onCreate()
         container = DefaultAppContainer()
+        instance = this
         SharedPreferencesManager.init(this)
     }
 }
