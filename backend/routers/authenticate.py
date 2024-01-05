@@ -43,5 +43,5 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: UserInDB = Depends(get_current_user)):
     if current_user.avatar:
-        current_user.avatarUrl = f"/avatar/{current_user.user_id}"
+        current_user.avatarUrl = f"/avatar/{current_user.image_id}"
     return current_user

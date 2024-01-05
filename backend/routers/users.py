@@ -15,19 +15,19 @@ async def upload_image(file: UploadFile = File(...), collection=Depends(get_user
     """
     image_data = await file.read()
     # 更新用户头像
-    res = await collection.update_one({"username":user.username},{"$set":{"avatar":image_data}})
+    res = await collection.update_one({"username":user.username},{"$set":{"avatar":image_data, "image_id":str(ObjectId())}})
     return {"message":"上传成功"}
 
-@router.get("/avatar/{user_id}", response_class=StreamingResponse)
-async def get_avatar(user_id: str, collection=Depends(get_user_collection)):
+@router.get("/avatar/{image_id}", response_class=StreamingResponse)
+async def get_avatar(image_id: str, collection=Depends(get_user_collection)):
     """
     根据用户 id 返回用户头像
     """
-    user = await collection.find_one({"_id":ObjectId(user_id)})
+    user = await collection.find_one({"image_id": image_id})
     if user and user.get("avatar"):
         return StreamingResponse(BytesIO(user["avatar"]), media_type="image/png")
-    else:
-        raise HTTPException(status_code=404, detail="User avatar not found")
+
+    raise HTTPException(status_code=404, detail="User avatar not found")
 
 
 class Password(BaseModel):

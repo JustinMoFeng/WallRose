@@ -12,6 +12,7 @@ class UserInDB(User):
     user_id: PyObjectId | None = Field(alias="_id", default=None)
     hashed_password: str
     avatar: bytes | None = None
+    image_id: str | None = None
 
 class Token(BaseModel):
     access_token: str
