@@ -94,6 +94,11 @@ fun ChatPage(
     userViewModel: UserViewModel,
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
 ){
+
+//    LaunchedEffect(key1 = true) {
+//        chatViewModel.getCurrentLocation()
+//    }
+
     val scope = rememberCoroutineScope()
     if(chatViewModel.currentMessage=="")chatViewModel.getGreeting()
     Scaffold(
@@ -133,7 +138,7 @@ fun ChatPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                gesturesEnabled = false,
+                gesturesEnabled = drawerState.isOpen,
                 drawerState = drawerState,
             ) {
 
