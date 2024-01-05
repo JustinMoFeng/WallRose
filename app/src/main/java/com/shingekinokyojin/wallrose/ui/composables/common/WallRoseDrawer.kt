@@ -15,9 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +35,7 @@ import com.shingekinokyojin.wallrose.R
 import com.shingekinokyojin.wallrose.config.RouteConfig.ROUTE_CHAT
 import com.shingekinokyojin.wallrose.config.RouteConfig.ROUTE_PROFILE
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
+import kotlinx.coroutines.launch
 
 private data class DrawerTuple(
     @StringRes val title: Int,
@@ -43,11 +48,14 @@ private val navData = listOf(
     R.string.tabbar_profile to R.drawable.tabbar_profile to ROUTE_PROFILE
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WallRoseDrawer(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    drawerState: DrawerState
 ) {
+    val scope = rememberCoroutineScope()
     WallRoseTheme {
         Column(
             modifier = modifier
@@ -76,7 +84,15 @@ fun WallRoseDrawer(
                     icon = it.first.second,
                     modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    navController.navigate(it.second)
+                    val currentDestination = navController.currentDestination
+                    if (currentDestination?.route != it.second) {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                        navController.navigate(it.second) {
+                            launchSingleTop = true  // 避免在栈顶重复加载相同界面
+                        }
+                    }
                 }
                 Spacer(
                     modifier = Modifier
@@ -144,11 +160,13 @@ fun WallRoseDrawerItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewWallRoseDrawer() {
     WallRoseDrawer(
-        navController = NavController(LocalContext.current)
+        navController = NavController(LocalContext.current),
+        drawerState = DrawerState(DrawerValue.Closed)
     )
 }
 
