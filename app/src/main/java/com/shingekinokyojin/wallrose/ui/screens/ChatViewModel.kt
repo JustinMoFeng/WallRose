@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.location.LocationManager
 import android.provider.AlarmClock
 import android.util.Log
@@ -12,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,7 +35,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.Period
-import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -88,7 +85,8 @@ class ChatViewModel(
                 currentChatId = chatsRepository.createChat().toString()
                 if(currentChatId == ""){
                     loginStatus = false
-                    currentMessage = "创建聊天失败"
+                    currentMessage = ""
+                    responding = false
                     return@launch
                 }
                 Log.d("ChatViewModel", "Created chat $currentChatId")
@@ -130,12 +128,11 @@ class ChatViewModel(
                 }
             }
 
+            responding = false
+
             if(toolFlag){
-                responding = false
                 sendMessage("")
             }
-
-            responding = false
         }
     }
 

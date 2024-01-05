@@ -1,8 +1,8 @@
 package com.shingekinokyojin.wallrose.ui.composables.profile
 
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -233,6 +233,7 @@ fun ProfileDetailItem(
     readOnly: Boolean = false,
     isSecurity: Boolean = false
 ){
+    Log.d("ProfileDetailItem", "ProfileDetailItem: $imageValue")
     WallRoseTheme {
         Row(
             modifier = modifier

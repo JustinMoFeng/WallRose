@@ -80,12 +80,12 @@ class UserViewModel(
             }
         }
     }
-    
+
     fun uploadImage(context:Context, imageURL: Uri){
         viewModelScope.launch {
             val file = uriToFile(context, imageURL)
-            val string = userRepository.uploadImage(file!!)
-            myAvatarUrl = string
+            userRepository.uploadImage(file!!)
+            getUserInfo()
         }
     }
 
