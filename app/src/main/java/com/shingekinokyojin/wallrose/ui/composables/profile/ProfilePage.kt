@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +67,8 @@ fun ProfilePage(
     navController: NavController,
     userViewModel: UserViewModel,
     chatViewModel: ChatViewModel,
-    url: String
+    url: String,
+    drawerState: DrawerState
 ){
 
     WallRoseTheme {
@@ -149,7 +151,8 @@ fun ProfilePage(
                         modifier = Modifier
                             .fillMaxWidth(0.648f)
                             .fillMaxHeight()
-                            .padding(it)
+                            .padding(it),
+                        drawerState = drawerState,
                     )
                 },
                 modifier = Modifier

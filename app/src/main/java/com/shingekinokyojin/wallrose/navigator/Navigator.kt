@@ -1,5 +1,8 @@
 package com.shingekinokyojin.wallrose.navigator
 
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,6 +23,7 @@ import com.shingekinokyojin.wallrose.ui.screens.AuthenticateViewModel
 import com.shingekinokyojin.wallrose.ui.screens.ChatViewModel
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WallRoseNavHost(
     modifier: Modifier = Modifier,
@@ -30,6 +34,7 @@ fun WallRoseNavHost(
     val chatViewModel : ChatViewModel = viewModel(factory = ChatViewModel.Factory)
     val authenticateViewModel : AuthenticateViewModel = viewModel(factory = AuthenticateViewModel.Factory)
     val userViewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     NavHost(
         modifier = modifier,
@@ -40,7 +45,8 @@ fun WallRoseNavHost(
             ChatPage(
                 chatViewModel = chatViewModel,
                 navController = navController,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                drawerState = drawerState
             )
         }
         
@@ -49,7 +55,8 @@ fun WallRoseNavHost(
                 navController = navController,
                 userViewModel = userViewModel,
                 url = url,
-                chatViewModel = chatViewModel
+                chatViewModel = chatViewModel,
+                drawerState = drawerState
             )
         }
 
@@ -88,7 +95,5 @@ fun WallRoseNavHost(
                 chatViewModel = chatViewModel
             )
         }
-
-
     }
 }
