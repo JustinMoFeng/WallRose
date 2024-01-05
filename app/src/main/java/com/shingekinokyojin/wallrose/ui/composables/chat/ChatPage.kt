@@ -1,6 +1,5 @@
 package com.shingekinokyojin.wallrose.ui.composables.chat
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -44,7 +42,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -299,28 +296,31 @@ fun ChatLive2d(
                     renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
                 }
 
+                // 生成一个随机数
+                val random = (0..100).random()
+
                 val lifecycleObserver = LifecycleEventObserver { _, event ->
                     when (event) {
                         Lifecycle.Event.ON_START -> {
-                            Log.d("ChatLive2d", "ON_START")
+                            Log.d("ChatLive2d", "ON_START$random")
+                            glSurfaceView.onResume()
                             LAppMinimumDelegate.getInstance().onStart(MainActivity.instance)
                         }
                         Lifecycle.Event.ON_RESUME -> {
-                            Log.d("ChatLive2d", "ON_RESUME")
-                            glSurfaceView.onResume()
+                            Log.d("ChatLive2d", "ON_RESUME$random")
                         }
                         Lifecycle.Event.ON_PAUSE -> {
-                            Log.d("ChatLive2d", "ON_PAUSE")
-                            glSurfaceView.onPause()
+                            Log.d("ChatLive2d", "ON_PAUSE$random")
                             LAppMinimumDelegate.getInstance().onPause()
                         }
 
                         Lifecycle.Event.ON_STOP -> {
-                            Log.d("ChatLive2d", "ON_STOP")
+                            Log.d("ChatLive2d", "ON_STOP$random")
+                            glSurfaceView.onPause()
                             LAppMinimumDelegate.getInstance().onStop()
                         }
                         Lifecycle.Event.ON_DESTROY ->{
-                            Log.d("ChatLive2d", "ON_DESTROY")
+                            Log.d("ChatLive2d", "ON_DESTROY$random")
                             LAppMinimumDelegate.getInstance().onDestroy()
                         }
                         else -> {}
