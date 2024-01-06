@@ -15,10 +15,10 @@ interface AppContainer {
 class DefaultAppContainer : AppContainer {
 
     companion object{
-        val url = "http://58.37.44.136:8000"
+        val url = "http://wallrose.huox3.cn:8000"
     }
     override val baseUrl: String
-        get() = "http://58.37.44.136:8000"
+        get() = "http://wallrose.huox3.cn:8000"
 
     /**
      * okhttp client for creating api calls
