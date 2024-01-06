@@ -32,3 +32,7 @@ WallRose 是一款集成了GPT技术的智能语音助手，它结合了自然�
 - [**Compose**](https://developer.android.com/jetpack/compose)：用于构建灵活的用户界面。
 - [**FastAPI**](https://fastapi.tiangolo.com/)：高性能的Web框架，提供快速、简单但高效的API开发体验。
 - [**Live2D**](https://www.live2d.com/en/)：增添趣味和互动性，提升用户体验。
+
+## 致谢 🌹
+
+我们衷心感谢 [**GPT**](https://openai.com/gpt-4) 技术的支持和启发，它是本项目的核心。GPT的先进自然语言处理能力让WallRose成为可能，为我们提供了强大的交流和创造力工具。
