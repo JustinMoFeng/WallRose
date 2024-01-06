@@ -200,14 +200,15 @@ fun RegisterBody(
                                 Text("确定", color = MaterialTheme.colorScheme.tertiary)
                             }
                         },
-                        containerColor = Color(0xFF111111),
+                        containerColor = MaterialTheme.colorScheme.primary,
                         textContentColor = MaterialTheme.colorScheme.tertiary,
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            shape = RoundedCornerShape(10.dp)
-                        )
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                shape = RoundedCornerShape(10.dp)
+                            )
                     )
                 }
 
@@ -274,14 +275,15 @@ fun RegisterBody(
                             Text("确定", color = MaterialTheme.colorScheme.tertiary)
                         }
                     },
-                    containerColor = Color(0xFF111111),
+                    containerColor = MaterialTheme.colorScheme.primary,
                     textContentColor = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             }else if(authenticateViewModel.registerState!=""){
                 AlertDialog(
@@ -302,14 +304,15 @@ fun RegisterBody(
                             Text("确定", color = MaterialTheme.colorScheme.tertiary)
                         }
                     },
-                    containerColor = Color(0xFF111111),
+                    containerColor = MaterialTheme.colorScheme.primary,
                     textContentColor = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             }
 

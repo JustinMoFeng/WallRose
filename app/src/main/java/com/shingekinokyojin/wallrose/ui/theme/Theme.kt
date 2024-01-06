@@ -22,9 +22,7 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = DarkWordColor,
     // chat聊天框背景色
     background = TransDarkBackgroundColor,
-    onError = ButtonColor
-
-
+    onError = DarkButtonColor
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -34,8 +32,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = LightWordColor,
     // chat聊天框背景色
     background = TransLightBackgroundColor,
-    onError = ButtonColor
-
+    onError = LightButtonColor
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

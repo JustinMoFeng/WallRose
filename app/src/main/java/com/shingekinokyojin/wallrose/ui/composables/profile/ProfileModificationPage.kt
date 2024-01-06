@@ -32,6 +32,7 @@ import com.shingekinokyojin.wallrose.config.RouteConfig
 import com.shingekinokyojin.wallrose.ui.composables.common.WallRoseDetailAppBar
 import com.shingekinokyojin.wallrose.ui.screens.UserViewModel
 import com.shingekinokyojin.wallrose.ui.theme.WallRoseTheme
+import kotlinx.serialization.json.JsonNull.content
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +100,7 @@ fun ProfileModificationBody(
             modifier = modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.secondary),
+                .background(MaterialTheme.colorScheme.primary),
         ) {
             if(userViewModel.reviseUserInfo == "昵称") {
                 ProfileModificationItem(
@@ -148,13 +149,16 @@ fun ProfileModificationBody(
                         userViewModel.revisePassword()
                     }
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                ),
                 content = {
                     Text(
                         text = "确认",
                         modifier = Modifier
                             .wrapContentWidth(),
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             )
@@ -200,18 +204,18 @@ fun ProfileModificationBody(
                                 modifier = Modifier
                                     .wrapContentWidth(),
                                 style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.tertiary
                             )
                         }
                     },
-                    containerColor = Color(0xFF111111),
+                    containerColor = MaterialTheme.colorScheme.primary,
                     textContentColor = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             } else if(userViewModel.reviseUserInfoState == "true") {
                 AlertDialog(
@@ -256,18 +260,18 @@ fun ProfileModificationBody(
                                 modifier = Modifier
                                     .wrapContentWidth(),
                                 style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.tertiary,
                             )
                         }
                     },
-                    containerColor = Color(0xFF111111),
+                    containerColor = MaterialTheme.colorScheme.primary,
                     textContentColor = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             }
         }
@@ -285,7 +289,7 @@ fun ProfileModificationItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.secondary)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -314,7 +318,7 @@ fun ProfileModificationItem(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.primary)
+                            .background(MaterialTheme.colorScheme.secondary)
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {

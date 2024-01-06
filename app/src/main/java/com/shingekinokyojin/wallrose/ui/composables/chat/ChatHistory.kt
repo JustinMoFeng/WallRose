@@ -1,12 +1,12 @@
 package com.shingekinokyojin.wallrose.ui.composables.chat
 
-import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,22 +64,31 @@ fun ChatHistoryPage(
                 )
             }
         ) {
-            ChatHistoryBody(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(it),
-                chatHistory = userViewModel.chosenChatHistory,
-                userViewModel= userViewModel,
-                onGoChat = {
-                    chatViewModel.currentChatId = userViewModel.chosenChatHistory?._id.toString()
-                    // 获取最后一条message
-                    val lastMessage = userViewModel.chosenChatHistory?.messages?.last()
-                    chatViewModel.currentMessage = if(lastMessage is AssistantMessage) lastMessage.content.toString() else ""
-                    navController.navigate("chat")
-                }
-            )
-            
-            
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.primary),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ChatHistoryBody(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(it)
+                        .background(MaterialTheme.colorScheme.primary),
+                    chatHistory = userViewModel.chosenChatHistory,
+                    userViewModel = userViewModel,
+                    onGoChat = {
+                        chatViewModel.currentChatId =
+                            userViewModel.chosenChatHistory?._id.toString()
+                        // 获取最后一条message
+                        val lastMessage = userViewModel.chosenChatHistory?.messages?.last()
+                        chatViewModel.currentMessage =
+                            if (lastMessage is AssistantMessage) lastMessage.content.toString() else ""
+                        navController.navigate("chat")
+                    }
+                )
+            }
         }
     }
 
