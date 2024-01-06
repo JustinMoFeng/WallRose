@@ -1,5 +1,7 @@
 # WallRose —— GPT-enhanced Voice Assistant 🌐🔊
 
+![GitHub license](https://img.shields.io/github/license/JustinMoFeng/WallRose) ![Platform](https://img.shields.io/badge/platform-Android-lightgrey)
+
 WallRose 是一款集成了GPT技术的智能语音助手，它结合了自然语言处理的强大功能，为用户提供信息查询、建议和创意输出。它不仅支持基本的语言交流，还融合了语言翻译、编程辅助和休闲娱乐等多种功能，使其成为一个多面手的数字助手。
 
 ## 主要功能 🌟
