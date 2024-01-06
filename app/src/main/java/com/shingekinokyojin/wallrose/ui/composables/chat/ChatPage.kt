@@ -115,7 +115,7 @@ fun ChatPage(
                 },
                 onRightClick = {
                     if(chatViewModel.currentChatId!="") {
-                        userViewModel.getChatHistory()
+                        userViewModel.getCurrentChatHistory(chatViewModel.currentChatId)
                         navController.navigate(RouteConfig.ROUTE_CHAT_HISTORY)
                     }
                 }

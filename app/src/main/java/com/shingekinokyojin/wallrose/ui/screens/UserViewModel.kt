@@ -69,6 +69,31 @@ class UserViewModel(
         }
     }
 
+    fun getCurrentChatHistory(currentChatId: String) {
+        viewModelScope.launch {
+            chatHistory = listOf()
+            val string = userRepository.getChatHistory()
+            if(chosenChatHistory == null && string.isNotEmpty()){
+                chosenChatHistory = string[0]
+            }
+            Log.d("UserViewModel", "getChatHistory: $string")
+            for (chat in string) {
+                if(chat._id == currentChatId){
+                    chosenChatHistory = chat
+                }
+                val messages = chat.messages
+                if(messages.size>=2){
+                    val secondMessage = messages[1]
+                    if(secondMessage is UserMessage){
+                        chatHistory = chatHistory + chat
+                    }else if(secondMessage is AssistantMessage){
+                        chatHistory = chatHistory + chat
+                    }
+                }
+            }
+
+        }
+    }
     fun getUserInfo() {
         viewModelScope.launch {
             val stringArr = userRepository.getMeInfo()
