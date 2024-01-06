@@ -23,6 +23,8 @@ import com.qweather.sdk.bean.base.Lang
 import com.qweather.sdk.bean.base.Unit
 import com.qweather.sdk.bean.geo.GeoBean
 import com.qweather.sdk.bean.geo.GeoBean.LocationBean
+import com.qweather.sdk.bean.weather.WeatherDailyBean
+import com.qweather.sdk.bean.weather.WeatherNowBean
 import com.qweather.sdk.view.QWeather
 import com.shingekinokyojin.wallrose.WallRoseApplication
 import com.shingekinokyojin.wallrose.data.ChatsRepository
@@ -112,7 +114,7 @@ class ChatViewModel(
                         toolFlag = true
                         val returnStr = when(toolObj.function.name){
                             "set_alarm" -> setAlarmClock(toolObj.function.arguments)
-                            "get_weather" -> getCurrentWeather(toolObj.function.arguments)
+                            "get_weather" -> getWeather(toolObj.function.arguments)
 
                             else -> "unknown function"
                         }
@@ -160,7 +162,15 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun getCurrentWeather(arguments: String): String{
+    private fun getNowWeatherString(cityName: String, weatherNowBean: WeatherNowBean) : String {
+        val weatherText = weatherNowBean.now.text
+        val temperature = weatherNowBean.now.temp
+        val precipitation = weatherNowBean.now.precip
+        val humidity = weatherNowBean.now.humidity
+        return "$cityName 天气: $weatherText, $temperature℃, 降水量: $precipitation mm, 湿度: $humidity%"
+    }
+
+    private suspend fun getWeather(arguments: String): String{
         try {
             if (!haveLocation) {
                 gettingLocation = true
@@ -180,6 +190,10 @@ class ChatViewModel(
             val daysDifference = period.days
             Log.d("ChatViewModel", daysDifference.toString())
 
+            if (daysDifference < 0) {
+                return "失败，日期不能早于今天"
+            }
+
             if (daysDifference == 0) {
                 return suspendCancellableCoroutine<String> { continuation ->
                     QWeather.getWeatherNow(
@@ -193,19 +207,62 @@ class ChatViewModel(
                                 continuation.resumeWithException(e ?: Exception("Unknown error"))
                             }
 
-                            override fun onSuccess(p0: com.qweather.sdk.bean.weather.WeatherNowBean?) {
+                            override fun onSuccess(p0: WeatherNowBean?) {
                                 Log.d("ChatViewModel", "Success: $p0")
-                                val weatherText = p0?.now?.text.toString()
-                                val temperature = p0?.now?.temp.toString()
-                                val precipitation = p0?.now?.precip.toString()
-                                val humidity = p0?.now?.humidity.toString()
-                                continuation.resume("${city.name} 天气: $weatherText, $temperature℃, 降水量: $precipitation mm, 湿度: $humidity%")
+                                continuation.resume(getNowWeatherString(city.name, p0!!))
                             }
                         }
                     )
                 }
             } else {
-                return "Weather information is not available for future dates"
+                return suspendCancellableCoroutine<String> { continuation ->
+
+                    val weatherFunction = when {
+                        daysDifference <= 3 -> { ctx: Context, id: String, lang: Lang, unit: Unit, listener: QWeather.OnResultWeatherDailyListener ->
+                            QWeather.getWeather3D(ctx, id, lang, unit, listener)
+                        }
+                        daysDifference <= 7 -> { ctx: Context, id: String, lang: Lang, unit: Unit, listener: QWeather.OnResultWeatherDailyListener ->
+                            QWeather.getWeather7D(ctx, id, lang, unit, listener)
+                        }
+                        daysDifference <= 10 -> { ctx: Context, id: String, lang: Lang, unit: Unit, listener: QWeather.OnResultWeatherDailyListener ->
+                            QWeather.getWeather10D(ctx, id, lang, unit, listener)
+                        }
+                        daysDifference <= 15 -> { ctx: Context, id: String, lang: Lang, unit: Unit, listener: QWeather.OnResultWeatherDailyListener ->
+                            QWeather.getWeather15D(ctx, id, lang, unit, listener)
+                        }
+                        else -> { ctx: Context, id: String, lang: Lang, unit: Unit, listener: QWeather.OnResultWeatherDailyListener ->
+                            QWeather.getWeather30D(ctx, id, lang, unit, listener)
+                        }
+                    }
+
+                    weatherFunction(
+                        context,
+                        city.id,
+                        Lang.ZH_HANS,
+                        Unit.METRIC,
+                        object : QWeather.OnResultWeatherDailyListener {
+                            override fun onError(e: Throwable?) {
+                                Log.e("ChatViewModel", "Error: $e")
+                                continuation.resumeWithException(e ?: Exception("Unknown error"))
+                            }
+
+                            override fun onSuccess(p0: WeatherDailyBean?) {
+                                Log.d("ChatViewModel", "Success: ${p0!!}")
+                                // 从p0.daily中取出对应日期的天气
+                                val weatherDaily = p0.daily[daysDifference]
+                                val date = weatherDaily.fxDate
+                                val dayWeatherText = weatherDaily.textDay
+                                val nightWeatherText = weatherDaily.textNight
+                                val temperature = weatherDaily.tempMax
+                                val precipitation = weatherDaily.precip
+                                val humidity = weatherDaily.humidity
+                                continuation.resume(
+                                    "$city.name $date 白天: $dayWeatherText, 夜晚: $nightWeatherText 最大温度 $temperature℃, 降水量: $precipitation mm, 湿度: $humidity%"
+                                )
+                            }
+                        }
+                    )
+                }
             }
         } catch (e: Exception) {
             Log.e("ChatViewModel", "Error: $e")
@@ -213,7 +270,7 @@ class ChatViewModel(
         }
     }
 
-    suspend fun getCurrentLocation(): LocationBean? {
+    private suspend fun getCurrentLocation(): LocationBean? {
         gettingLocation = true
         Log.d("ChatViewModel", "Getting current location")
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
