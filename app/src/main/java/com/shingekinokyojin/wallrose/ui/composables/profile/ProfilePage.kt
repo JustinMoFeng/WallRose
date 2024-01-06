@@ -36,7 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -120,14 +119,15 @@ fun ProfilePage(
                         )
                     }
                 },
-                containerColor = Color(0xFF111111),
+                containerColor = MaterialTheme.colorScheme.primary,
                 textContentColor = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    shape = RoundedCornerShape(10.dp)
-                )
+                modifier = Modifier
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
             )
         }
 

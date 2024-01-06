@@ -197,7 +197,16 @@ fun ChatPage(
                         ) {
                             Text(text = "OK")
                         }
-                    }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             }
 
@@ -221,7 +230,16 @@ fun ChatPage(
                         ) {
                             Text(text = "OK")
                         }
-                    }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    textContentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                 )
             }
 
