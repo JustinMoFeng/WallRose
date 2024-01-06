@@ -561,7 +561,8 @@ fun ChatBottomInputPart(
                     .padding(0.dp)
                     .wrapContentWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF7F7F)
+                    containerColor = MaterialTheme.colorScheme.onError,
+                    contentColor = MaterialTheme.colorScheme.tertiary
                 )
             )
             {

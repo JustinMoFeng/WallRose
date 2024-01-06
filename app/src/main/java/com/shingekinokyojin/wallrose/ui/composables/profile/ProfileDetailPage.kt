@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -157,7 +158,7 @@ fun ProfileDetailBody(
             modifier = modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.secondary),
+                .background(MaterialTheme.colorScheme.primary),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ProfileDetailItem(
@@ -205,7 +206,11 @@ fun ProfileDetailBody(
                 onClick = {
                     showDialog = true
                 },
-                modifier = Modifier.fillMaxWidth(0.7f)
+                modifier = Modifier.fillMaxWidth(0.7f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                )
             ) {
                 Text(
                     text = "退出登录",
@@ -213,7 +218,6 @@ fun ProfileDetailBody(
                         .wrapContentWidth()
                         .padding(vertical = 5.dp),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.tertiary
                 )
             }
 
@@ -238,7 +242,7 @@ fun ProfileDetailItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.secondary)
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

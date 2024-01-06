@@ -22,4 +22,5 @@ val LightBackgroundColor = Color(0xFFF3EAD6)
 val TransDarkBackgroundColor = Color(0xBF593333)
 val TransLightBackgroundColor = Color(0xBFF3EAD6)
 
-val ButtonColor = Color(0xFFFF7F7F)
+val DarkButtonColor = Color(0xFFFF7F7F)
+val LightButtonColor = Color(0xFFF3EAD6)

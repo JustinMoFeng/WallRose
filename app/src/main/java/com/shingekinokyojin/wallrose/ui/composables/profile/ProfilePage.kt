@@ -195,7 +195,7 @@ fun ProfileContent(
     WallRoseTheme {
         Column(
             modifier = modifier
-                .background(color = MaterialTheme.colorScheme.secondary)
+                .background(color = MaterialTheme.colorScheme.primary)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -234,10 +234,13 @@ fun ProfileContent(
                     .weight(0.5f)
                     .height(55.dp)
                     .padding(horizontal = 20.dp, vertical = 10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                )
             ) {
                 Text(
                     text = stringResource(id = R.string.profile_new_chat),
-                    color = MaterialTheme.colorScheme.tertiary,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -258,7 +261,7 @@ fun ProfileUserPart(
     WallRoseTheme {
         Row(
             modifier = modifier
-                .background(color = MaterialTheme.colorScheme.secondary)
+                .background(color = MaterialTheme.colorScheme.primary)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -324,7 +327,7 @@ fun ProfileUserChatHistoryItem(
     WallRoseTheme {
         Column(
             modifier = modifier
-                .background(color = MaterialTheme.colorScheme.primary)
+                .background(color = MaterialTheme.colorScheme.secondary)
                 .fillMaxWidth()
                 .clickable {
                     userViewModel.chosenChatHistory = chatHistoryContent
@@ -334,7 +337,7 @@ fun ProfileUserChatHistoryItem(
         ) {
             Row(
                 modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.primary)
+                    .background(color = MaterialTheme.colorScheme.secondary)
                     .fillMaxWidth()
                     .padding(vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -386,14 +389,14 @@ fun ProfileUserChatHistory(
     WallRoseTheme {
         Column(
             modifier = modifier
-                .background(color = MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp)),
+                .background(color = MaterialTheme.colorScheme.secondary, RoundedCornerShape(10.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondary,
                         RoundedCornerShape(10.dp)
                     ),
                 horizontalArrangement = Arrangement.Center
